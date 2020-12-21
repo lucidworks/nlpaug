@@ -3,7 +3,14 @@
 """
 
 from nlpaug.augmenter.word import WordAugmenter
-from nlpaug.util import Action, Doc, WarningException, WarningName, WarningCode, WarningMessage
+from nlpaug.util import (
+    Action,
+    Doc,
+    WarningException,
+    WarningName,
+    WarningCode,
+    WarningMessage,
+)
 import nlpaug.model.word_stats as nmws
 
 TFIDF_MODEL = {}
@@ -48,13 +55,35 @@ class TfIdfAug(WordAugmenter):
     >>> aug = naw.TfIdfAug(model_path='.')
     """
 
-    def __init__(self, model_path='.', action=Action.SUBSTITUTE,
-                 name='TfIdf_Aug', aug_min=1, aug_max=10, aug_p=0.3, top_k=5, stopwords=None,
-                 tokenizer=None, reverse_tokenizer=None, stopwords_regex=None, verbose=0):
+    def __init__(
+        self,
+        model_path=".",
+        action=Action.SUBSTITUTE,
+        name="TfIdf_Aug",
+        aug_min=1,
+        aug_max=10,
+        aug_p=0.3,
+        top_k=5,
+        stopwords=None,
+        tokenizer=None,
+        reverse_tokenizer=None,
+        stopwords_regex=None,
+        verbose=0,
+    ):
         super().__init__(
-            action=action, name=name, aug_p=aug_p, aug_min=aug_min, aug_max=aug_max, stopwords=stopwords,
-            tokenizer=tokenizer, reverse_tokenizer=reverse_tokenizer, device='cpu', verbose=verbose,
-            stopwords_regex=stopwords_regex, include_detail=False)
+            action=action,
+            name=name,
+            aug_p=aug_p,
+            aug_min=aug_min,
+            aug_max=aug_max,
+            stopwords=stopwords,
+            tokenizer=tokenizer,
+            reverse_tokenizer=reverse_tokenizer,
+            device="cpu",
+            verbose=verbose,
+            stopwords_regex=stopwords_regex,
+            include_detail=False,
+        )
         self.model_path = model_path
         self.top_k = top_k
         self.model = self.get_model(force_reload=False)
@@ -77,8 +106,11 @@ class TfIdfAug(WordAugmenter):
 
         if len(word_idxes) == 0:
             if self.verbose > 0:
-                exception = WarningException(name=WarningName.OUT_OF_VOCABULARY,
-                                             code=WarningCode.WARNING_CODE_002, msg=WarningMessage.NO_WORD)
+                exception = WarningException(
+                    name=WarningName.OUT_OF_VOCABULARY,
+                    code=WarningCode.WARNING_CODE_002,
+                    msg=WarningMessage.NO_WORD,
+                )
                 exception.output()
             return None
         if len(word_idxes) < aug_cnt:
@@ -101,7 +133,7 @@ class TfIdfAug(WordAugmenter):
 
         # If still cannot pick up, random pick index regrardless probability
         if len(aug_idxes) < aug_cnt:
-            aug_idxes.extend(self.sample(possible_idxes, aug_cnt-len(aug_idxes)))
+            aug_idxes.extend(self.sample(possible_idxes, aug_cnt - len(aug_idxes)))
 
         aug_idxes = self.sample(aug_idxes, aug_cnt)
 
@@ -130,23 +162,37 @@ class TfIdfAug(WordAugmenter):
                 new_token = new_token.capitalize()
 
             change_seq += 1
-            doc.add_token(aug_idx, token=new_token, action=Action.INSERT,
-                          change_seq=self.parent_change_seq + change_seq)
+            doc.add_token(
+                aug_idx,
+                token=new_token,
+                action=Action.INSERT,
+                change_seq=self.parent_change_seq + change_seq,
+            )
 
-            if self.get_word_case(doc.get_token(0).get_latest_token().token) == 'capitalize':
+            if (
+                self.get_word_case(doc.get_token(0).get_latest_token().token)
+                == "capitalize"
+            ):
                 change_token = doc.get_token(1).get_latest_token().token.lower()
-                doc.add_change_log(1, new_token=change_token, action=Action.INSERT,
-                                   change_seq=self.parent_change_seq + change_seq)
+                doc.add_change_log(
+                    1,
+                    new_token=change_token,
+                    action=Action.INSERT,
+                    change_seq=self.parent_change_seq + change_seq,
+                )
 
         if self.include_detail:
-            return self.reverse_tokenizer(doc.get_augmented_tokens()), doc.get_change_logs()
+            return (
+                self.reverse_tokenizer(doc.get_augmented_tokens()),
+                doc.get_change_logs(),
+            )
         else:
             return self.reverse_tokenizer(doc.get_augmented_tokens())
 
     def substitute(self, data):
         if not data or not data.strip():
             return data
-            
+
         change_seq = 0
         doc = Doc(data, self.tokenizer(data))
 
@@ -159,14 +205,23 @@ class TfIdfAug(WordAugmenter):
             candidate_tokens = self.model.predict(original_token, top_k=self.top_k)
             substitute_token = self.sample(candidate_tokens, 1)[0]
             if aug_idx == 0:
-                substitute_token = self.align_capitalization(original_token, substitute_token)
+                substitute_token = self.align_capitalization(
+                    original_token, substitute_token
+                )
 
             change_seq += 1
-            doc.add_change_log(aug_idx, new_token=substitute_token, action=Action.SUBSTITUTE,
-                               change_seq=self.parent_change_seq + change_seq)
+            doc.add_change_log(
+                aug_idx,
+                new_token=substitute_token,
+                action=Action.SUBSTITUTE,
+                change_seq=self.parent_change_seq + change_seq,
+            )
 
         if self.include_detail:
-            return self.reverse_tokenizer(doc.get_augmented_tokens()), doc.get_change_logs()
+            return (
+                self.reverse_tokenizer(doc.get_augmented_tokens()),
+                doc.get_change_logs(),
+            )
         else:
             return self.reverse_tokenizer(doc.get_augmented_tokens())
 

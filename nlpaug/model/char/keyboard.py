@@ -6,7 +6,15 @@ from nlpaug.model.char import Character
 
 
 class Keyboard(Character):
-    def __init__(self, special_char=True, numeric=True, upper_case=True, cache=True, lang="en", model_path=None):
+    def __init__(
+        self,
+        special_char=True,
+        numeric=True,
+        upper_case=True,
+        cache=True,
+        lang="en",
+        model_path=None,
+    ):
         super().__init__(cache)
 
         self.special_char = special_char
@@ -14,17 +22,26 @@ class Keyboard(Character):
         self.upper_case = upper_case
         self.lang = lang
         self.model_path = model_path
-        self.model = self.get_model(model_path=model_path, special_char=special_char, numeric=numeric, 
-            upper_case=upper_case, lang=lang)
+        self.model = self.get_model(
+            model_path=model_path,
+            special_char=special_char,
+            numeric=numeric,
+            upper_case=upper_case,
+            lang=lang,
+        )
 
     def predict(self, data):
         return self.model[data]
 
     # TODO: Extending to 2 keyboard distance
     @classmethod
-    def get_model(cls, model_path, special_char=True, numeric=True, upper_case=True, lang="en"):
+    def get_model(
+        cls, model_path, special_char=True, numeric=True, upper_case=True, lang="en"
+    ):
         if not os.path.exists(model_path):
-            raise ValueError('The model_path does not exist. Please check "{}"'.format(model_path))
+            raise ValueError(
+                'The model_path does not exist. Please check "{}"'.format(model_path)
+            )
 
         with open(model_path, encoding="utf8") as f:
             mapping = json.load(f)

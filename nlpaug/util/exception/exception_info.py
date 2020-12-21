@@ -1,4 +1,3 @@
-
 class ExceptionInfo:
     def __init__(self, name, exp_type, code, msg):
         self.name = name
@@ -7,9 +6,11 @@ class ExceptionInfo:
         self.msg = msg
 
     def output(self):
-        msg = '[{}] Name:{}, Code:{}, Message:{}'.format(self.exp_type, self.name, self.code, self.msg)
+        msg = "[{}] Name:{}, Code:{}, Message:{}".format(
+            self.exp_type, self.name, self.code, self.msg
+        )
         print(msg)
 
 
 class ExceptionType:
-    WARNING = 'Warning'
+    WARNING = "Warning"

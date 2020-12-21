@@ -10,12 +10,16 @@ from nlpaug.util import AudioLoader
 class TestCrop(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        env_config_path = os.path.abspath(os.path.join(
-            os.path.dirname(__file__), '..', '..', '..', '.env'))
+        env_config_path = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "..", "..", "..", ".env")
+        )
         load_dotenv(env_config_path)
         # https://freewavesamples.com/yamaha-v50-rock-beat-120-bpm
         cls.sample_wav_file = os.path.join(
-            os.environ.get("TEST_DIR"), 'res', 'audio', 'Yamaha-V50-Rock-Beat-120bpm.wav'
+            os.environ.get("TEST_DIR"),
+            "res",
+            "audio",
+            "Yamaha-V50-Rock-Beat-120bpm.wav",
         )
         cls.audio, cls.sampling_rate = AudioLoader.load_audio(cls.sample_wav_file)
 
@@ -46,10 +50,14 @@ class TestCrop(unittest.TestCase):
         audio_size = len(self.audio)
 
         for _ in range(10):
-            aug = naa.CropAug(sampling_rate=self.sampling_rate, duration=duration, stateless=False)
+            aug = naa.CropAug(
+                sampling_rate=self.sampling_rate, duration=duration, stateless=False
+            )
             aug_data = aug.augment(self.audio)
             aug_size = len(aug_data)
             expected_crop_size = self.sampling_rate * duration
 
             self.assertGreater(audio_size, aug_size)
-            self.assertEqual(len(self.audio[aug.start_pos:aug.end_pos]), expected_crop_size)
+            self.assertEqual(
+                len(self.audio[aug.start_pos : aug.end_pos]), expected_crop_size
+            )

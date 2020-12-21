@@ -8,13 +8,36 @@ from nlpaug.util import WarningException, WarningName, WarningCode, WarningMessa
 
 
 class CharAugmenter(Augmenter):
-    def __init__(self, action, name='Char_Aug', min_char=2, aug_char_min=1, aug_char_max=10, aug_char_p=0.3,
-                 aug_word_min=1, aug_word_max=10, aug_word_p=0.3, tokenizer=None, reverse_tokenizer=None,
-                 stopwords=None, device='cpu', verbose=0, stopwords_regex=None, include_special_char=True,
-                 include_detail=False):
+    def __init__(
+        self,
+        action,
+        name="Char_Aug",
+        min_char=2,
+        aug_char_min=1,
+        aug_char_max=10,
+        aug_char_p=0.3,
+        aug_word_min=1,
+        aug_word_max=10,
+        aug_word_p=0.3,
+        tokenizer=None,
+        reverse_tokenizer=None,
+        stopwords=None,
+        device="cpu",
+        verbose=0,
+        stopwords_regex=None,
+        include_special_char=True,
+        include_detail=False,
+    ):
         super().__init__(
-            name=name, method=Method.CHAR, action=action, aug_min=None, aug_max=None, device=device, verbose=verbose,
-            include_detail=include_detail)
+            name=name,
+            method=Method.CHAR,
+            action=action,
+            aug_min=None,
+            aug_max=None,
+            device=device,
+            verbose=verbose,
+            include_detail=include_detail,
+        )
         self.aug_p = None
         self.aug_char_min = aug_char_min
         self.aug_char_max = aug_char_max
@@ -27,7 +50,11 @@ class CharAugmenter(Augmenter):
         self.tokenizer = tokenizer or Tokenizer.tokenizer
         self.reverse_tokenizer = reverse_tokenizer or Tokenizer.reverse_tokenizer
         self.stopwords = stopwords
-        self.stopwords_regex = re.compile(stopwords_regex) if stopwords_regex is not None else stopwords_regex
+        self.stopwords_regex = (
+            re.compile(stopwords_regex)
+            if stopwords_regex is not None
+            else stopwords_regex
+        )
         self.include_special_char = include_special_char
 
     @classmethod
@@ -36,7 +63,7 @@ class CharAugmenter(Augmenter):
 
     @classmethod
     def clean(cls, data):
-        if isinstance(data, list) :
+        if isinstance(data, list):
             return [d.strip() for d in data]
         return data.strip()
 
@@ -69,8 +96,11 @@ class CharAugmenter(Augmenter):
 
             # skip stopwords by regex
             if self.stopwords_regex is not None and (
-                    self.stopwords_regex.match(_token) or self.stopwords_regex.match(' '+_token+' ') or
-                    self.stopwords_regex.match(' '+_token) or self.stopwords_regex.match(_token+' ')):
+                self.stopwords_regex.match(_token)
+                or self.stopwords_regex.match(" " + _token + " ")
+                or self.stopwords_regex.match(" " + _token)
+                or self.stopwords_regex.match(_token + " ")
+            ):
                 continue
 
             # skip if char is too less
@@ -92,8 +122,11 @@ class CharAugmenter(Augmenter):
 
         if len(idxes) == 0:
             if self.verbose > 0:
-                exception = WarningException(name=WarningName.OUT_OF_VOCABULARY,
-                                             code=WarningCode.WARNING_CODE_002, msg=WarningMessage.NO_WORD)
+                exception = WarningException(
+                    name=WarningName.OUT_OF_VOCABULARY,
+                    code=WarningCode.WARNING_CODE_002,
+                    msg=WarningMessage.NO_WORD,
+                )
                 exception.output()
             return []
         if len(idxes) < aug_cnt:

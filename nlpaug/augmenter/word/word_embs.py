@@ -8,7 +8,7 @@ import nlpaug.model.word_embs as nmw
 
 
 WORD_EMBS_MODELS = {}
-model_types = ['word2vec', 'glove', 'fasttext']
+model_types = ["word2vec", "glove", "fasttext"]
 
 
 def init_word_embs_model(model_path, model_type, force_reload=False, top_k=None):
@@ -18,17 +18,21 @@ def init_word_embs_model(model_path, model_type, force_reload=False, top_k=None)
         WORD_EMBS_MODELS[model_type].top_k = top_k
         return WORD_EMBS_MODELS[model_type]
 
-    if model_type == 'word2vec':
+    if model_type == "word2vec":
         model = nmw.Word2vec(top_k=top_k)
         model.read(model_path)
-    elif model_type == 'glove':
+    elif model_type == "glove":
         model = nmw.GloVe(top_k=top_k)
         model.read(model_path)
-    elif model_type == 'fasttext':
+    elif model_type == "fasttext":
         model = nmw.Fasttext(top_k=top_k)
         model.read(model_path)
     else:
-        raise ValueError('Model type value is unexpected. Expected values include {}'.format(model_types))
+        raise ValueError(
+            "Model type value is unexpected. Expected values include {}".format(
+                model_types
+            )
+        )
 
     WORD_EMBS_MODELS[model_type] = model
     return model
@@ -64,14 +68,39 @@ class WordEmbsAug(WordAugmenter):
     >>> aug = naw.WordEmbsAug(model_type='word2vec', model_path='.')
     """
 
-    def __init__(self, model_type, model_path='.', model=None, action=Action.SUBSTITUTE,
-        name='WordEmbs_Aug', aug_min=1, aug_max=10, aug_p=0.3, top_k=100, n_gram_separator='_',
-        stopwords=None, tokenizer=None, reverse_tokenizer=None, force_reload=False, stopwords_regex=None,
-        verbose=0):
+    def __init__(
+        self,
+        model_type,
+        model_path=".",
+        model=None,
+        action=Action.SUBSTITUTE,
+        name="WordEmbs_Aug",
+        aug_min=1,
+        aug_max=10,
+        aug_p=0.3,
+        top_k=100,
+        n_gram_separator="_",
+        stopwords=None,
+        tokenizer=None,
+        reverse_tokenizer=None,
+        force_reload=False,
+        stopwords_regex=None,
+        verbose=0,
+    ):
         super().__init__(
-            action=action, name=name, aug_p=aug_p, aug_min=aug_min, aug_max=aug_max, stopwords=stopwords,
-            tokenizer=tokenizer, reverse_tokenizer=reverse_tokenizer, device='cpu', verbose=verbose,
-            stopwords_regex=stopwords_regex, include_detail=False)
+            action=action,
+            name=name,
+            aug_p=aug_p,
+            aug_min=aug_min,
+            aug_max=aug_max,
+            stopwords=stopwords,
+            tokenizer=tokenizer,
+            reverse_tokenizer=reverse_tokenizer,
+            device="cpu",
+            verbose=verbose,
+            stopwords_regex=stopwords_regex,
+            include_detail=False,
+        )
 
         self.model_type = model_type
         self.model_path = model_path
@@ -82,14 +111,22 @@ class WordEmbsAug(WordAugmenter):
         self.pre_validate()
 
         if model is None:
-            self.model = self.get_model(model_path=model_path, model_type=model_type, force_reload=force_reload,
-                                        top_k=self.top_k)
+            self.model = self.get_model(
+                model_path=model_path,
+                model_type=model_type,
+                force_reload=force_reload,
+                top_k=self.top_k,
+            )
         else:
             self.model = model
 
     def pre_validate(self):
         if self.model_type not in model_types:
-            raise ValueError('Model type value is unexpected. Expected values include {}'.format(model_types))
+            raise ValueError(
+                "Model type value is unexpected. Expected values include {}".format(
+                    model_types
+                )
+            )
 
     @classmethod
     def get_model(cls, model_path, model_type, force_reload=False, top_k=100):
@@ -126,18 +163,25 @@ class WordEmbsAug(WordAugmenter):
                 new_token = new_token.split(self.n_gram_separator)[0]
 
             change_seq += 1
-            doc.add_token(aug_idx, token=new_token, action=Action.INSERT,
-                          change_seq=self.parent_change_seq + change_seq)
+            doc.add_token(
+                aug_idx,
+                token=new_token,
+                action=Action.INSERT,
+                change_seq=self.parent_change_seq + change_seq,
+            )
 
         if self.include_detail:
-            return self.reverse_tokenizer(doc.get_augmented_tokens()), doc.get_change_logs()
+            return (
+                self.reverse_tokenizer(doc.get_augmented_tokens()),
+                doc.get_change_logs(),
+            )
         else:
             return self.reverse_tokenizer(doc.get_augmented_tokens())
 
     def substitute(self, data):
         if not data or not data.strip():
             return data
-            
+
         change_seq = 0
         doc = Doc(data, self.tokenizer(data))
 
@@ -152,13 +196,22 @@ class WordEmbsAug(WordAugmenter):
             candidate_tokens = self.model.predict(original_token, n=1)
             substitute_token = self.sample(candidate_tokens, 1)[0]
             if aug_idx == 0:
-                substitute_token = self.align_capitalization(original_token, substitute_token)
+                substitute_token = self.align_capitalization(
+                    original_token, substitute_token
+                )
 
             change_seq += 1
-            doc.add_change_log(aug_idx, new_token=substitute_token, action=Action.SUBSTITUTE,
-                               change_seq=self.parent_change_seq + change_seq)
+            doc.add_change_log(
+                aug_idx,
+                new_token=substitute_token,
+                action=Action.SUBSTITUTE,
+                change_seq=self.parent_change_seq + change_seq,
+            )
 
         if self.include_detail:
-            return self.reverse_tokenizer(doc.get_augmented_tokens()), doc.get_change_logs()
+            return (
+                self.reverse_tokenizer(doc.get_augmented_tokens()),
+                doc.get_change_logs(),
+            )
         else:
             return self.reverse_tokenizer(doc.get_augmented_tokens())

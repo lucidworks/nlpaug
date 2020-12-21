@@ -3,45 +3,50 @@ import sys
 import logging
 
 
-if __name__ == '__main__':
-    sys.path.append('../nlpaug')
+if __name__ == "__main__":
+    sys.path.append("../nlpaug")
 
     runner = unittest.TextTestRunner()
 
     # disable transformer's info logging
-    for file_name in ['tokenization_utils', 'file_utils', 'modeling_utils', 'modeling_xlnet',
-                      'configuration_utils']:
-        logging.getLogger('transformers.' + file_name).setLevel(logging.ERROR)
+    for file_name in [
+        "tokenization_utils",
+        "file_utils",
+        "modeling_utils",
+        "modeling_xlnet",
+        "configuration_utils",
+    ]:
+        logging.getLogger("transformers." + file_name).setLevel(logging.ERROR)
 
     test_dirs = [
-        'test/augmenter/char/',
-        'test/augmenter/word/',
-        'test/augmenter/sentence/',
-        'test/augmenter/audio/',
-        'test/augmenter/spectrogram/',
-        'test/model/char/',
-        'test/model/word/',
-        'test/util/selection/',
-        'test/flow/',
-        'test/profiling/sentence/',
+        "test/augmenter/char/",
+        "test/augmenter/word/",
+        "test/augmenter/sentence/",
+        "test/augmenter/audio/",
+        "test/augmenter/spectrogram/",
+        "test/model/char/",
+        "test/model/word/",
+        "test/util/selection/",
+        "test/flow/",
+        "test/profiling/sentence/",
     ]
-    
+
     for test_dir in test_dirs:
-       loader = unittest.TestLoader()
-       suite = loader.discover(test_dir)
-       runner.run(suite)
+        loader = unittest.TestLoader()
+        suite = loader.discover(test_dir)
+        runner.run(suite)
 
     suites = []
     # suites.append(unittest.TestLoader().loadTestsFromName('augmenter.test_augmenter'))
     # suites.append(unittest.TestLoader().loadTestsFromName('util.text.test_tokenizer'))
     # suites.append(unittest.TestLoader().loadTestsFromName('util.selection.test_filtering'))
-    
+
     # suites.append(unittest.TestLoader().loadTestsFromName('augmenter.test_text_augmenter'))
-    
+
     # suites.append(unittest.TestLoader().loadTestsFromName('augmenter.sentence.test_sentence'))
     # suites.append(unittest.TestLoader().loadTestsFromName('augmenter.sentence.test_context_word_embs_sentence'))
     # suites.append(unittest.TestLoader().loadTestsFromName('augmenter.sentence.test_abst_summ'))
-    
+
     # suites.append(unittest.TestLoader().loadTestsFromName('augmenter.word.test_word'))
     # suites.append(unittest.TestLoader().loadTestsFromName('augmenter.word.test_tfidf'))
     # suites.append(unittest.TestLoader().loadTestsFromName('augmenter.word.test_spelling'))
@@ -53,12 +58,12 @@ if __name__ == '__main__':
     # suites.append(unittest.TestLoader().loadTestsFromName('augmenter.word.test_random_word'))
     # suites.append(unittest.TestLoader().loadTestsFromName('augmenter.word.test_reserved'))
     # suites.append(unittest.TestLoader().loadTestsFromName('model.word.test_word_embs_model'))
-    
+
     # suites.append(unittest.TestLoader().loadTestsFromName('augmenter.char.test_char'))
     # suites.append(unittest.TestLoader().loadTestsFromName('augmenter.char.test_keyboard'))
     # suites.append(unittest.TestLoader().loadTestsFromName('augmenter.char.test_ocr'))
     # suites.append(unittest.TestLoader().loadTestsFromName('augmenter.char.test_random_char'))
-    
+
     # suites.append(unittest.TestLoader().loadTestsFromName('augmenter.test_audio_augmenter'))
 
     # suites.append(unittest.TestLoader().loadTestsFromName('augmenter.audio.test_audio'))

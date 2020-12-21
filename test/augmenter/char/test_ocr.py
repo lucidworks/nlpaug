@@ -5,7 +5,7 @@ from nlpaug.augmenter.char import OcrAug
 
 class TestOcr(unittest.TestCase):
     def test_ocr_single_word(self):
-        texts = ['Zoology', 'roku123456']
+        texts = ["Zoology", "roku123456"]
         aug = OcrAug()
         for text in texts:
             augmented_text = aug.augment(text)
@@ -14,7 +14,7 @@ class TestOcr(unittest.TestCase):
         self.assertTrue(len(texts) > 0)
 
     def test_ocr_single_word_nonexist_char(self):
-        texts = ['AAAAA', 'KKKKK']
+        texts = ["AAAAA", "KKKKK"]
         aug = OcrAug()
         for text in texts:
             augmented_text = aug.augment(text)
@@ -23,7 +23,7 @@ class TestOcr(unittest.TestCase):
         self.assertTrue(len(texts) > 0)
 
     def test_ocr_multi_words(self):
-        texts = ['The quick brown fox jumps over the lazy dog']
+        texts = ["The quick brown fox jumps over the lazy dog"]
         aug = OcrAug()
 
         for text in texts:

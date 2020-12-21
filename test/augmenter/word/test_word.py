@@ -9,22 +9,32 @@ from nlpaug.util import Action, Doc
 class TestWord(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        env_config_path = os.path.abspath(os.path.join(
-            os.path.dirname(__file__), '..', '..', '..', '.env'))
+        env_config_path = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "..", "..", "..", ".env")
+        )
         load_dotenv(env_config_path)
 
-        cls.word2vec_model_path = os.path.join(os.environ.get("MODEL_DIR"), 'word', 'word_embs', 'GoogleNews-vectors-negative300.bin')
-        cls.word2vec_model = naw.WordEmbsAug(model_type='word2vec', model_path=cls.word2vec_model_path)
+        cls.word2vec_model_path = os.path.join(
+            os.environ.get("MODEL_DIR"),
+            "word",
+            "word_embs",
+            "GoogleNews-vectors-negative300.bin",
+        )
+        cls.word2vec_model = naw.WordEmbsAug(
+            model_type="word2vec", model_path=cls.word2vec_model_path
+        )
         cls.context_word_embs_model = naw.ContextualWordEmbsAug()
 
-        cls.tfidf_model_path = os.path.join(os.environ.get("MODEL_DIR"), 'word', 'tfidf')
+        cls.tfidf_model_path = os.path.join(
+            os.environ.get("MODEL_DIR"), "word", "tfidf"
+        )
 
         cls._train_tfidf(cls)
 
     @classmethod
     def tearDownClass(self):
-        os.remove(os.path.join(self.tfidf_model_path, 'tfidfaug_w2idf.txt'))
-        os.remove(os.path.join(self.tfidf_model_path, 'tfidfaug_w2tfidf.txt'))
+        os.remove(os.path.join(self.tfidf_model_path, "tfidfaug_w2idf.txt"))
+        os.remove(os.path.join(self.tfidf_model_path, "tfidfaug_w2tfidf.txt"))
 
     def _train_tfidf(self):
         import sklearn.datasets
@@ -36,7 +46,9 @@ class TestWord(unittest.TestCase):
             return token_pattern.findall(text)
 
         # Load sample data
-        train_data = sklearn.datasets.fetch_20newsgroups(subset='train', remove=('headers', 'footers', 'quotes'))
+        train_data = sklearn.datasets.fetch_20newsgroups(
+            subset="train", remove=("headers", "footers", "quotes")
+        )
         train_x = train_data.data
 
         # Tokenize input
@@ -51,101 +63,99 @@ class TestWord(unittest.TestCase):
         tfidf_model.save(self.tfidf_model_path)
 
     def test_empty_input_for_crop(self):
-        texts = ['', '           ', None]
+        texts = ["", "           ", None]
 
-        augs = [
-            naw.RandomWordAug(action='crop',aug_p=0.5, aug_min=0)
-        ]
+        augs = [naw.RandomWordAug(action="crop", aug_p=0.5, aug_min=0)]
 
         for aug in augs:
             for text in texts:
                 augmented_text = aug.augment(text)
-                self.assertTrue(augmented_text is None or augmented_text.strip() == '')
+                self.assertTrue(augmented_text is None or augmented_text.strip() == "")
 
             augmented_texts = aug.augment(texts)
             for augmented_text in augmented_texts:
-                self.assertTrue(augmented_text is None or augmented_text.strip() == '')
+                self.assertTrue(augmented_text is None or augmented_text.strip() == "")
 
     def test_empty_input_for_insert(self):
-        texts = ['', '           ']
+        texts = ["", "           "]
 
-        self.word2vec_model.action = 'insert'
-        self.context_word_embs_model.action = 'insert'
+        self.word2vec_model.action = "insert"
+        self.context_word_embs_model.action = "insert"
 
         augs = [
             naw.TfIdfAug(model_path=self.tfidf_model_path, action="insert"),
             self.word2vec_model,
-            self.context_word_embs_model
+            self.context_word_embs_model,
         ]
 
         for aug in augs:
             for text in texts:
                 augmented_text = aug.augment(text)
-                self.assertTrue(augmented_text is None or augmented_text.strip() == '')
+                self.assertTrue(augmented_text is None or augmented_text.strip() == "")
 
             augmented_texts = aug.augment(texts)
             for augmented_text in augmented_texts:
-                self.assertTrue(augmented_text is None or augmented_text.strip() == '')
+                self.assertTrue(augmented_text is None or augmented_text.strip() == "")
 
     def test_empty_input_substitute(self):
-        texts = ['', '           ']
+        texts = ["", "           "]
 
-        self.word2vec_model.action = 'substitute'
-        self.context_word_embs_model.action = 'substitute'
+        self.word2vec_model.action = "substitute"
+        self.context_word_embs_model.action = "substitute"
 
         augs = [
             naw.SpellingAug(),
             naw.AntonymAug(),
-            naw.RandomWordAug(action='substitute'),
-            naw.SynonymAug(aug_src='wordnet'),
+            naw.RandomWordAug(action="substitute"),
+            naw.SynonymAug(aug_src="wordnet"),
             naw.TfIdfAug(model_path=self.tfidf_model_path, action="substitute"),
             self.word2vec_model,
-            self.context_word_embs_model
+            self.context_word_embs_model,
         ]
 
         for aug in augs:
             for text in texts:
                 augmented_text = aug.augment(text)
-                self.assertTrue(augmented_text is None or augmented_text.strip() == '')
+                self.assertTrue(augmented_text is None or augmented_text.strip() == "")
 
             augmented_texts = aug.augment(texts)
             for augmented_text in augmented_texts:
-                self.assertTrue(augmented_text is None or augmented_text.strip() == '')
+                self.assertTrue(augmented_text is None or augmented_text.strip() == "")
 
     def test_empty_input_for_swap(self):
-        texts = ['', '           ', None]
+        texts = ["", "           ", None]
         aug = naw.RandomWordAug(action="swap")
         for text in texts:
             augmented_text = aug.augment(text)
-            self.assertTrue(augmented_text is None or augmented_text.strip() == '')
+            self.assertTrue(augmented_text is None or augmented_text.strip() == "")
 
         augmented_texts = aug.augment(texts)
         for augmented_text in augmented_texts:
-            self.assertTrue(augmented_text is None or augmented_text.strip() == '')
+            self.assertTrue(augmented_text is None or augmented_text.strip() == "")
 
     def test_empty_input_for_delete(self):
-        texts = ['', '           ', None]
+        texts = ["", "           ", None]
         augs = [
             naw.RandomWordAug(action="delete"),
-            naw.RandomWordAug(action="delete", stopwords=['a', 'an', 'the'])
+            naw.RandomWordAug(action="delete", stopwords=["a", "an", "the"]),
         ]
 
         for aug in augs:
             for text in texts:
                 augmented_text = aug.augment(text)
-                self.assertTrue(augmented_text is None or augmented_text.strip() == '')
+                self.assertTrue(augmented_text is None or augmented_text.strip() == "")
 
             augmented_texts = aug.augment(texts)
             for augmented_text in augmented_texts:
-                self.assertTrue(augmented_text is None or augmented_text.strip() == '')
+                self.assertTrue(augmented_text is None or augmented_text.strip() == "")
 
     def test_skip_punctuation(self):
-        text = '. . . . ! ? # @'
+        text = ". . . . ! ? # @"
 
         augs = [
             # naw.ContextualWordEmbsAug(action='insert'), # After using convert_tokens_to_ids and decode function, it cannot keep it original format.
             naw.AntonymAug(),
-            naw.TfIdfAug(model_path=self.tfidf_model_path, action="substitute")
+            naw.TfIdfAug(model_path=self.tfidf_model_path, action="substitute"),
         ]
 
         for aug in augs:
@@ -153,12 +163,12 @@ class TestWord(unittest.TestCase):
             self.assertEqual(text, augmented_text)
 
     def test_non_strip_input(self):
-        text = ' Good boy '
+        text = " Good boy "
 
         augs = [
-            naw.ContextualWordEmbsAug(action='insert'),
+            naw.ContextualWordEmbsAug(action="insert"),
             naw.AntonymAug(),
-            naw.TfIdfAug(model_path=self.tfidf_model_path, action="substitute")
+            naw.TfIdfAug(model_path=self.tfidf_model_path, action="substitute"),
         ]
 
         for aug in augs:
@@ -167,13 +177,26 @@ class TestWord(unittest.TestCase):
 
     def test_excessive_space(self):
         # https://github.com/makcedward/nlpaug/issues/48
-        text = 'The  quick brown fox        jumps over the lazy dog . 1  2 '
-        expected_result = ['The', 'quick', 'brown', 'fox', 'jumps', 'over', 'the', 'lazy', 'dog', '.', '1', '2']
+        text = "The  quick brown fox        jumps over the lazy dog . 1  2 "
+        expected_result = [
+            "The",
+            "quick",
+            "brown",
+            "fox",
+            "jumps",
+            "over",
+            "the",
+            "lazy",
+            "dog",
+            ".",
+            "1",
+            "2",
+        ]
 
         augs = [
-            naw.ContextualWordEmbsAug(action='insert'),
+            naw.ContextualWordEmbsAug(action="insert"),
             naw.AntonymAug(),
-            naw.TfIdfAug(model_path=self.tfidf_model_path, action="substitute")
+            naw.TfIdfAug(model_path=self.tfidf_model_path, action="substitute"),
         ]
 
         for aug in augs:
@@ -181,12 +204,13 @@ class TestWord(unittest.TestCase):
             self.assertEqual(tokenized_text, expected_result)
 
     def test_multi_thread(self):
-        text = 'The quick brown fox jumps over the lazy dog.'
+        text = "The quick brown fox jumps over the lazy dog."
         augs = [
             naw.RandomWordAug(),
-            naw.WordEmbsAug(model_type='word2vec', model_path=self.word2vec_model_path),
+            naw.WordEmbsAug(model_type="word2vec", model_path=self.word2vec_model_path),
             naw.ContextualWordEmbsAug(
-                model_path='xlnet-base-cased', action="substitute", device='cpu')
+                model_path="xlnet-base-cased", action="substitute", device="cpu"
+            ),
         ]
 
         for num_thread in [1, 3]:
@@ -199,97 +223,115 @@ class TestWord(unittest.TestCase):
                     self.assertEqual(len(augmented_data), num_thread)
 
     def test_stopwords(self):
-        text = 'The quick brown fox jumps over the lazy dog.'
-        stopwords = ['The', 'brown', 'fox', 'jumps', 'the', 'dog']
+        text = "The quick brown fox jumps over the lazy dog."
+        stopwords = ["The", "brown", "fox", "jumps", "the", "dog"]
 
         augs = [
             naw.RandomWordAug(action="delete", stopwords=stopwords),
             naw.ContextualWordEmbsAug(stopwords=stopwords),
-            naw.WordEmbsAug(model_type='word2vec', model_path=self.word2vec_model_path, stopwords=stopwords)
+            naw.WordEmbsAug(
+                model_type="word2vec",
+                model_path=self.word2vec_model_path,
+                stopwords=stopwords,
+            ),
         ]
 
         for aug in augs:
             for i in range(10):
                 augmented_text = aug.augment(text)
                 self.assertTrue(
-                    'quick' not in augmented_text or 'over' not in augmented_text or 'lazy' not in augmented_text)
+                    "quick" not in augmented_text
+                    or "over" not in augmented_text
+                    or "lazy" not in augmented_text
+                )
 
     # https://github.com/makcedward/nlpaug/issues/81
     def test_stopwords_regex(self):
-        text = 'The quick brown fox jumps over the lazy dog.'
-        stopwords_regex = "( [a-zA-Z]{1}ox | [a-z]{1}og|(brown)|[a-zA-z]{1}he)|[a-z]{2}mps "
+        text = "The quick brown fox jumps over the lazy dog."
+        stopwords_regex = (
+            "( [a-zA-Z]{1}ox | [a-z]{1}og|(brown)|[a-zA-z]{1}he)|[a-z]{2}mps "
+        )
 
         augs = [
             naw.RandomWordAug(action="delete", stopwords_regex=stopwords_regex),
             naw.ContextualWordEmbsAug(stopwords_regex=stopwords_regex),
-            naw.WordEmbsAug(model_type='word2vec', model_path=self.word2vec_model_path,
-                            stopwords_regex=stopwords_regex)
+            naw.WordEmbsAug(
+                model_type="word2vec",
+                model_path=self.word2vec_model_path,
+                stopwords_regex=stopwords_regex,
+            ),
         ]
 
         for aug in augs:
             for i in range(10):
                 augmented_text = aug.augment(text)
                 self.assertTrue(
-                    'quick' not in augmented_text or 'over' not in augmented_text or 'lazy' not in augmented_text)
+                    "quick" not in augmented_text
+                    or "over" not in augmented_text
+                    or "lazy" not in augmented_text
+                )
 
     # https://github.com/makcedward/nlpaug/issues/82
     def test_case(self):
         # Swap
-        aug = naw.RandomWordAug(action='swap')
-        self.assertEqual('bB aA', aug.augment('aA bB'))
+        aug = naw.RandomWordAug(action="swap")
+        self.assertEqual("bB aA", aug.augment("aA bB"))
 
-        data = 'I love McDonalds'
+        data = "I love McDonalds"
         doc = Doc(data, aug.tokenizer(data))
         augmented_tokens = aug.change_case(doc, 1, 0, 1).get_augmented_tokens()
-        self.assertEqual(['Love', 'I', 'McDonalds'], augmented_tokens)
+        self.assertEqual(["Love", "I", "McDonalds"], augmented_tokens)
         doc = Doc(data, aug.tokenizer(data))
         augmented_tokens = aug.change_case(doc, 0, 1, 1).get_augmented_tokens()
-        self.assertEqual(['Love', 'I', 'McDonalds'], augmented_tokens)
+        self.assertEqual(["Love", "I", "McDonalds"], augmented_tokens)
 
-        data = 'He loves McDonalds'
+        data = "He loves McDonalds"
         doc = Doc(data, aug.tokenizer(data))
         augmented_tokens = aug.change_case(doc, 1, 0, 1).get_augmented_tokens()
-        self.assertEqual(['Loves', 'he', 'McDonalds'], augmented_tokens)
+        self.assertEqual(["Loves", "he", "McDonalds"], augmented_tokens)
         doc = Doc(data, aug.tokenizer(data))
         augmented_tokens = aug.change_case(doc, 0, 1, 1).get_augmented_tokens()
-        self.assertEqual(['Loves', 'he', 'McDonalds'], augmented_tokens)
+        self.assertEqual(["Loves", "he", "McDonalds"], augmented_tokens)
         doc = Doc(data, aug.tokenizer(data))
         augmented_tokens = aug.change_case(doc, 2, 1, 1).get_augmented_tokens()
-        self.assertEqual(['He', 'McDonalds', 'loves'], augmented_tokens)
+        self.assertEqual(["He", "McDonalds", "loves"], augmented_tokens)
 
         # Insert
-        aug = naw.TfIdfAug(model_path=self.tfidf_model_path, action='insert')
+        aug = naw.TfIdfAug(model_path=self.tfidf_model_path, action="insert")
         expected = False
         for i in range(10):
-            augmented_text = aug.augment('Good')
-            if 'good' in augmented_text and aug.get_word_case(augmented_text.split(' ')[0]) == 'capitalize':
+            augmented_text = aug.augment("Good")
+            if (
+                "good" in augmented_text
+                and aug.get_word_case(augmented_text.split(" ")[0]) == "capitalize"
+            ):
                 expected = True
                 break
         self.assertTrue(expected)
 
         # Substitute
-        aug = naw.RandomWordAug(action='substitute', target_words=['abc'])
+        aug = naw.RandomWordAug(action="substitute", target_words=["abc"])
         expected = False
         for i in range(10):
-            augmented_text = aug.augment('I love')
-            if augmented_text == 'Abc love':
+            augmented_text = aug.augment("I love")
+            if augmented_text == "Abc love":
                 expected = True
                 break
         self.assertTrue(expected)
 
         aug = naw.AntonymAug()
-        self.assertEqual('Unhappy', aug.augment('Happy'))
+        self.assertEqual("Unhappy", aug.augment("Happy"))
 
         # Do not change if target word is non-lower
         aug = naw.SpellingAug()
-        self.assertEqual('RE', aug.augment('Re'))
+        self.assertEqual("RE", aug.augment("Re"))
 
         # Delete case
-        aug = naw.RandomWordAug(action='delete')
+        aug = naw.RandomWordAug(action="delete")
         expected = False
         for i in range(10):
-            augmented_text = aug.augment('I love')
-            if augmented_text == 'Love':
+            augmented_text = aug.augment("I love")
+            if augmented_text == "Love":
                 expected = True
                 break
         self.assertTrue(expected)

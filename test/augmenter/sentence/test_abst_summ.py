@@ -5,17 +5,19 @@ from dotenv import load_dotenv
 import nlpaug.augmenter.sentence as nas
 import nlpaug.util.text.tokenizer as text_tokenizer
 
+
 class TestAbstSummAug(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        env_config_path = os.path.abspath(os.path.join(
-            os.path.dirname(__file__), '..', '..', '..', '.env'))
+        env_config_path = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "..", "..", "..", ".env")
+        )
         load_dotenv(env_config_path)
 
         cls.model_paths = [
-            'facebook/bart-large-cnn',
-            't5-small',
-            't5-base',
+            "facebook/bart-large-cnn",
+            "t5-small",
+            "t5-base",
         ]
 
         cls.text = """
@@ -41,12 +43,12 @@ class TestAbstSummAug(unittest.TestCase):
                 extensively researched topic and has reached to its maturity stage. Now the research has shifted 
                 towards the abstractive summarization. The complexities underlying with the natural language text 
                 makes abstractive summarization a difficult and a challenging task.
-            """
+            """,
         ]
 
     def test_contextual_word_embs(self):
         # self.execute_by_device('cuda')
-        self.execute_by_device('cpu')
+        self.execute_by_device("cpu")
 
     def execute_by_device(self, device):
         for model_path in self.model_paths:
@@ -60,7 +62,7 @@ class TestAbstSummAug(unittest.TestCase):
         self.assertLess(0, len(self.model_paths))
 
     def empty_input(self, aug):
-        text = ''
+        text = ""
 
         augmented_text = aug.augment(text)
         self.assertEqual(text, augmented_text)
@@ -74,10 +76,10 @@ class TestAbstSummAug(unittest.TestCase):
 
         if isinstance(data, list):
             for d, a in zip(data, augmented_text):
-                self.assertLess(len(a.split(' ')), len(d.split(' ')))
+                self.assertLess(len(a.split(" ")), len(d.split(" ")))
                 self.assertTrue(a[-1] in text_tokenizer.SENTENCE_SEPARATOR)
                 self.assertNotEqual(d, a)
         else:
-            self.assertLess(len(augmented_text.split(' ')), len(data.split(' ')))
+            self.assertLess(len(augmented_text.split(" ")), len(data.split(" ")))
             self.assertTrue(augmented_text[-1] in text_tokenizer.SENTENCE_SEPARATOR)
             self.assertNotEqual(data, augmented_text)

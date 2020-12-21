@@ -20,7 +20,17 @@ setup(
     packages=find_packages(exclude="test"),
     include_package_data=True,
     keywords=[
-        "deep learning", "neural network", "machine learning",
-        "nlp", "natural language processing", "text", "audio", "spectrogram",
-        "augmentation", "adversarial attack", "ai", "ml"]
+        "deep learning",
+        "neural network",
+        "machine learning",
+        "nlp",
+        "natural language processing",
+        "text",
+        "audio",
+        "spectrogram",
+        "augmentation",
+        "adversarial attack",
+        "ai",
+        "ml",
+    ],
 )

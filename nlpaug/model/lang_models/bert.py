@@ -13,19 +13,31 @@ from nlpaug.util.selection.filtering import *
 
 class Bert(LanguageModels):
     # https://arxiv.org/pdf/1810.04805.pdf
-    START_TOKEN = '[CLS]'
-    SEPARATOR_TOKEN = '[SEP]'
-    MASK_TOKEN = '[MASK]'
-    PAD_TOKEN = '[PAD]'
-    UNKNOWN_TOKEN = '[UNK]'
-    SUBWORD_PREFIX = '##'
+    START_TOKEN = "[CLS]"
+    SEPARATOR_TOKEN = "[SEP]"
+    MASK_TOKEN = "[MASK]"
+    PAD_TOKEN = "[PAD]"
+    UNKNOWN_TOKEN = "[UNK]"
+    SUBWORD_PREFIX = "##"
 
-    def __init__(self, model_path='bert-base-uncased', temperature=1.0, top_k=None, top_p=None, device='cuda', silence=True):
-        super().__init__(device, temperature=temperature, top_k=top_k, top_p=top_p, silence=silence)
+    def __init__(
+        self,
+        model_path="bert-base-uncased",
+        temperature=1.0,
+        top_k=None,
+        top_p=None,
+        device="cuda",
+        silence=True,
+    ):
+        super().__init__(
+            device, temperature=temperature, top_k=top_k, top_p=top_p, silence=silence
+        )
         try:
             from transformers import AutoModelForMaskedLM, AutoTokenizer
         except ModuleNotFoundError:
-            raise ModuleNotFoundError('Missed transformers library. Install transfomers by `pip install transformers`')
+            raise ModuleNotFoundError(
+                "Missed transformers library. Install transfomers by `pip install transformers`"
+            )
 
         self.model_path = model_path
 
@@ -34,10 +46,16 @@ class Bert(LanguageModels):
         self.pad_id = self.token2id(self.PAD_TOKEN)
         if silence:
             # Transformers thrown an warning regrading to weight initialization. It is expected
-            orig_log_level = logging.getLogger('transformers.' + 'modeling_utils').getEffectiveLevel()
-            logging.getLogger('transformers.' + 'modeling_utils').setLevel(logging.ERROR)
+            orig_log_level = logging.getLogger(
+                "transformers." + "modeling_utils"
+            ).getEffectiveLevel()
+            logging.getLogger("transformers." + "modeling_utils").setLevel(
+                logging.ERROR
+            )
             self.model = AutoModelForMaskedLM.from_pretrained(model_path)
-            logging.getLogger('transformers.' + 'modeling_utils').setLevel(orig_log_level)
+            logging.getLogger("transformers." + "modeling_utils").setLevel(
+                orig_log_level
+            )
 
         self.model.to(self.device)
         self.model.eval()
@@ -50,7 +68,7 @@ class Bert(LanguageModels):
 
     def token2id(self, token):
         # Iseue 181: TokenizerFast have convert_tokens_to_ids but not convert_tokens_to_id
-        if 'TokenizerFast' in self.tokenizer.__class__.__name__:
+        if "TokenizerFast" in self.tokenizer.__class__.__name__:
             # New transformers API
             return self.tokenizer.convert_tokens_to_ids(token)
         else:
@@ -65,18 +83,20 @@ class Bert(LanguageModels):
         token_inputs = [self.tokenizer.encode(text) for text in texts]
         if target_words is None:
             target_words = [None] * len(token_inputs)
-        
+
         # Pad token
         max_token_size = max([len(t) for t in token_inputs])
         for i, token_input in enumerate(token_inputs):
             for _ in range(max_token_size - len(token_input)):
                 token_inputs[i].append(self.pad_id)
-        
+
         target_poses = []
         for tokens in token_inputs:
             target_poses.append(tokens.index(self.mask_id))
         segment_inputs = [[0] * len(tokens) for tokens in token_inputs]
-        mask_inputs = [[1] * len(tokens) for tokens in token_inputs] # 1: real token, 0: padding token
+        mask_inputs = [
+            [1] * len(tokens) for tokens in token_inputs
+        ]  # 1: real token, 0: padding token
 
         # Convert to feature
         token_inputs = torch.tensor(token_inputs).to(self.device)
@@ -86,19 +106,36 @@ class Bert(LanguageModels):
         # Prediction
         results = []
         with torch.no_grad():
-            outputs = self.model(input_ids=token_inputs, token_type_ids=segment_inputs, attention_mask=mask_inputs)
+            outputs = self.model(
+                input_ids=token_inputs,
+                token_type_ids=segment_inputs,
+                attention_mask=mask_inputs,
+            )
 
         # Selection
-        for output, target_pos, target_token in zip(outputs[0], target_poses, target_words):
+        for output, target_pos, target_token in zip(
+            outputs[0], target_poses, target_words
+        ):
             target_token_logits = output[target_pos]
-            
-            seed = {'temperature': self.temperature, 'top_k': self.top_k, 'top_p': self.top_p}
+
+            seed = {
+                "temperature": self.temperature,
+                "top_k": self.top_k,
+                "top_p": self.top_p,
+            }
             target_token_logits = self.control_randomness(target_token_logits, seed)
-            target_token_logits, target_token_idxes = self.filtering(target_token_logits, seed)
+            target_token_logits, target_token_idxes = self.filtering(
+                target_token_logits, seed
+            )
             if len(target_token_idxes) != 0:
-                new_tokens = self.pick(target_token_logits, target_token_idxes, target_word=target_token, n=10)
+                new_tokens = self.pick(
+                    target_token_logits,
+                    target_token_idxes,
+                    target_word=target_token,
+                    n=10,
+                )
                 results.append([t[0] for t in new_tokens])
             else:
-                results.append([''])
+                results.append([""])
 
         return results

@@ -1,5 +1,5 @@
 class Token:
-    def __init__(self, token, start_pos=-1, action='', change_seq=0):
+    def __init__(self, token, start_pos=-1, action="", change_seq=0):
         self._token = token
         self._start_pos = start_pos
         self._action = action
@@ -39,8 +39,8 @@ class Token:
 
     def to_dict(self):
         return {
-            'token': self.token,
-            'action': self.action,
-            'start_pos': self.start_pos,
-            'change_seq': self.change_seq
+            "token": self.token,
+            "action": self.action,
+            "start_pos": self.start_pos,
+            "change_seq": self.change_seq,
         }

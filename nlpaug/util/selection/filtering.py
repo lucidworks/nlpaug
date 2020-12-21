@@ -52,14 +52,16 @@ def filter_top_k(data, k, replace=None, ascending=False):
         return filter_top_k_numpy(data, k, replace, ascending)
     if isinstance(data, torch.Tensor):
         return filter_top_k_pytorch(data, k, replace, ascending)
-    raise ValueError("Only support numpy or pytorch's tensor while {} is provided".format(type(data)))
+    raise ValueError(
+        "Only support numpy or pytorch's tensor while {} is provided".format(type(data))
+    )
 
 
 def filter_top_k_numpy(data, k, replace=None, ascending=False):
     idxes = np.argpartition(data, -k)[-k:]
 
     if replace:
-        replace_idxes = np.argpartition(data, len(data)-k)[:len(data)-k]
+        replace_idxes = np.argpartition(data, len(data) - k)[: len(data) - k]
         _data = data.copy()
         _data[replace_idxes] = replace
         return _data, idxes
@@ -80,7 +82,7 @@ def filter_top_k_pytorch(data, k, replace=None, ascending=False):
         return _data, idxes
 
     if ascending:
-        return torch.flip(filtered_data, (0, )), torch.flip(idxes, (0, ))
+        return torch.flip(filtered_data, (0,)), torch.flip(idxes, (0,))
     else:
         return filtered_data, idxes
 

@@ -28,12 +28,33 @@ class SplitAug(WordAugmenter):
     >>> aug = naw.SplitAug()
     """
 
-    def __init__(self, name='Split_Aug', aug_min=1, aug_max=10, aug_p=0.3, min_char=4, stopwords=None,
-                 tokenizer=None, reverse_tokenizer=None, stopwords_regex=None, verbose=0):
+    def __init__(
+        self,
+        name="Split_Aug",
+        aug_min=1,
+        aug_max=10,
+        aug_p=0.3,
+        min_char=4,
+        stopwords=None,
+        tokenizer=None,
+        reverse_tokenizer=None,
+        stopwords_regex=None,
+        verbose=0,
+    ):
         super().__init__(
-            action=Action.SPLIT, name=name, aug_p=aug_p, aug_min=aug_min, aug_max=aug_max, stopwords=stopwords,
-            tokenizer=tokenizer, reverse_tokenizer=reverse_tokenizer, device='cpu', verbose=verbose,
-            stopwords_regex=stopwords_regex, include_detail=False)
+            action=Action.SPLIT,
+            name=name,
+            aug_p=aug_p,
+            aug_min=aug_min,
+            aug_max=aug_max,
+            stopwords=stopwords,
+            tokenizer=tokenizer,
+            reverse_tokenizer=reverse_tokenizer,
+            device="cpu",
+            verbose=verbose,
+            stopwords_regex=stopwords_regex,
+            include_detail=False,
+        )
 
         self.min_char = min_char
 
@@ -47,7 +68,7 @@ class SplitAug(WordAugmenter):
     def split(self, data):
         if not data or not data.strip():
             return data
-            
+
         change_seq = 0
         doc = Doc(data, self.tokenizer(data))
 
@@ -66,12 +87,23 @@ class SplitAug(WordAugmenter):
             next_token = target_token[separate_pos:]
 
             change_seq += 1
-            doc.add_change_log(aug_idx, new_token=next_token, action=Action.SPLIT,
-                               change_seq=self.parent_change_seq + change_seq)
-            doc.add_token(aug_idx, token=prev_token, action=Action.SPLIT,
-                          change_seq=self.parent_change_seq + change_seq)
+            doc.add_change_log(
+                aug_idx,
+                new_token=next_token,
+                action=Action.SPLIT,
+                change_seq=self.parent_change_seq + change_seq,
+            )
+            doc.add_token(
+                aug_idx,
+                token=prev_token,
+                action=Action.SPLIT,
+                change_seq=self.parent_change_seq + change_seq,
+            )
 
         if self.include_detail:
-            return self.reverse_tokenizer(doc.get_augmented_tokens()), doc.get_change_logs()
+            return (
+                self.reverse_tokenizer(doc.get_augmented_tokens()),
+                doc.get_change_logs(),
+            )
         else:
             return self.reverse_tokenizer(doc.get_augmented_tokens())

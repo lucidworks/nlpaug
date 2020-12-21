@@ -41,19 +41,24 @@ class WordEmbeddings:
         return [word for word in self.w2v]
 
     @classmethod
-    def _normalize(cls, vectors, norm='l2'):
-        if norm == 'l2':
+    def _normalize(cls, vectors, norm="l2"):
+        if norm == "l2":
             return normalization.l2_norm(vectors)
-        elif norm == 'l1':
+        elif norm == "l1":
             return normalization.l1_norm(vectors)
-        elif norm == 'standard':
+        elif norm == "standard":
             return normalization.standard_norm(vectors)
 
     def predict(self, word, n=1):
         source_id = self.word2idx(word)
         source_vector = self.word2vector(word)
         scores = np.dot(self.normalized_vectors, source_vector)  # TODO: very slow.
-        target_ids = np.argpartition(-scores, self.top_k+2)[:self.top_k+2]  # TODO: slow.
-        target_words = [self.idx2word(idx) for idx in target_ids if idx != source_id and self.idx2word(idx).lower() !=
-                        word.lower()]  # filter out same word
-        return target_words[:self.top_k]
+        target_ids = np.argpartition(-scores, self.top_k + 2)[
+            : self.top_k + 2
+        ]  # TODO: slow.
+        target_words = [
+            self.idx2word(idx)
+            for idx in target_ids
+            if idx != source_id and self.idx2word(idx).lower() != word.lower()
+        ]  # filter out same word
+        return target_words[: self.top_k]

@@ -5,8 +5,8 @@ from nlpaug.augmenter.char.random import RandomCharAug
 
 class TestRandomCharReplaceAug(unittest.TestCase):
     def test_insert_single_word(self):
-        texts = ['Zoology', 'roku123456']
-        aug = RandomCharAug(action='insert', min_char=1)
+        texts = ["Zoology", "roku123456"]
+        aug = RandomCharAug(action="insert", min_char=1)
         for text in texts:
             augmented_text = aug.augment(text)
             self.assertNotEqual(text, augmented_text)
@@ -15,8 +15,8 @@ class TestRandomCharReplaceAug(unittest.TestCase):
         self.assertTrue(len(texts) > 0)
 
     def test_insert_multi_words(self):
-        texts = ['The quick brown fox jumps over the lazy dog']
-        aug = RandomCharAug(action='insert', min_char=1)
+        texts = ["The quick brown fox jumps over the lazy dog"]
+        aug = RandomCharAug(action="insert", min_char=1)
         for text in texts:
             augmented_cnt = 0
             augmented_text = aug.augment(text)
@@ -35,8 +35,8 @@ class TestRandomCharReplaceAug(unittest.TestCase):
         self.assertTrue(len(texts) > 0)
 
     def test_substitute_single_word(self):
-        texts = ['Zoology', 'roku123456']
-        aug = RandomCharAug(action='substitute', min_char=1)
+        texts = ["Zoology", "roku123456"]
+        aug = RandomCharAug(action="substitute", min_char=1)
         for text in texts:
             augmented_text = aug.augment(text)
             self.assertNotEqual(text, augmented_text)
@@ -44,8 +44,8 @@ class TestRandomCharReplaceAug(unittest.TestCase):
         self.assertTrue(len(texts) > 0)
 
     def test_substitute_multi_words(self):
-        texts = ['The quick brown fox jumps over the lazy dog']
-        aug = RandomCharAug(action='substitute', min_char=1)
+        texts = ["The quick brown fox jumps over the lazy dog"]
+        aug = RandomCharAug(action="substitute", min_char=1)
         for text in texts:
             augmented_cnt = 0
             augmented_text = aug.augment(text)
@@ -63,10 +63,7 @@ class TestRandomCharReplaceAug(unittest.TestCase):
         self.assertTrue(len(texts) > 0)
 
     def test_swap(self):
-        texts = [
-            'The quick brown fox jumps over the lazy dog',
-            'testing'
-        ]
+        texts = ["The quick brown fox jumps over the lazy dog", "testing"]
 
         aug = RandomCharAug(action="swap", min_char=1)
         for text in texts:
@@ -99,8 +96,8 @@ class TestRandomCharReplaceAug(unittest.TestCase):
         self.assertTrue(len(texts) > 0)
 
     def test_delete(self):
-        tokens = ['Zoology', 'roku123456']
-        aug = RandomCharAug(action='delete', min_char=1)
+        tokens = ["Zoology", "roku123456"]
+        aug = RandomCharAug(action="delete", min_char=1)
         for t in tokens:
             augmented_text = aug.augment(t)
             self.assertNotEqual(t, augmented_text)
@@ -109,9 +106,9 @@ class TestRandomCharReplaceAug(unittest.TestCase):
         self.assertTrue(len(tokens) > 0)
 
     def test_min_char(self):
-        tokens = ['Zoology', 'roku123456']
+        tokens = ["Zoology", "roku123456"]
 
-        for action in ['insert', 'swap', 'substitute', 'delete']:
+        for action in ["insert", "swap", "substitute", "delete"]:
             aug = RandomCharAug(action=action, min_char=20)
             for t in tokens:
                 augmented_text = aug.augment(t)
@@ -121,23 +118,23 @@ class TestRandomCharReplaceAug(unittest.TestCase):
         self.assertTrue(len(tokens) > 0)
 
     def test_swap_middle(self):
-        text = 'quick brown jumps over lazy'
-        aug = RandomCharAug(action="swap", swap_mode='middle', min_char=4)
+        text = "quick brown jumps over lazy"
+        aug = RandomCharAug(action="swap", swap_mode="middle", min_char=4)
 
         augmented_text = aug.augment(text)
         self.assertNotEqual(text, augmented_text)
         self.assertEqual(len(augmented_text), len(text))
 
     def test_swap_random(self):
-        text = 'quick brown jumps over lazy'
-        aug = RandomCharAug(action="swap", swap_mode='random', min_char=4)
+        text = "quick brown jumps over lazy"
+        aug = RandomCharAug(action="swap", swap_mode="random", min_char=4)
         augmented_text = aug.augment(text)
         self.assertNotEqual(text, augmented_text)
         self.assertEqual(len(augmented_text), len(text))
 
     def test_candidiates(self):
-        candidiates = ['AAA', '11', '===', '中文']
-        text = 'quick brown jumps over lazy'
+        candidiates = ["AAA", "11", "===", "中文"]
+        text = "quick brown jumps over lazy"
         aug = RandomCharAug(min_char=4, candidiates=candidiates)
         augmented_text = aug.augment(text)
         self.assertNotEqual(text, augmented_text)

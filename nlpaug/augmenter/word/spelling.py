@@ -46,16 +46,42 @@ class SpellingAug(WordAugmenter):
     >>> aug = naw.SpellingAug(dict_path='./spelling_en.txt')
     """
 
-    def __init__(self, dict_path=None, name='Spelling_Aug', aug_min=1, aug_max=10, aug_p=0.3, stopwords=None,
-                 tokenizer=None, reverse_tokenizer=None, include_reverse=True, stopwords_regex=None,
-                 verbose=0):
+    def __init__(
+        self,
+        dict_path=None,
+        name="Spelling_Aug",
+        aug_min=1,
+        aug_max=10,
+        aug_p=0.3,
+        stopwords=None,
+        tokenizer=None,
+        reverse_tokenizer=None,
+        include_reverse=True,
+        stopwords_regex=None,
+        verbose=0,
+    ):
         super().__init__(
-            action=Action.SUBSTITUTE, name=name, aug_p=aug_p, aug_min=aug_min, aug_max=aug_max, stopwords=stopwords,
-            tokenizer=tokenizer, reverse_tokenizer=reverse_tokenizer, device='cpu', verbose=verbose,
-            stopwords_regex=stopwords_regex, include_detail=False)
+            action=Action.SUBSTITUTE,
+            name=name,
+            aug_p=aug_p,
+            aug_min=aug_min,
+            aug_max=aug_max,
+            stopwords=stopwords,
+            tokenizer=tokenizer,
+            reverse_tokenizer=reverse_tokenizer,
+            device="cpu",
+            verbose=verbose,
+            stopwords_regex=stopwords_regex,
+            include_detail=False,
+        )
 
-
-        self.dict_path = dict_path if dict_path else os.path.join(LibraryUtil.get_res_dir(), 'word', 'spelling', 'spelling_en.txt')
+        self.dict_path = (
+            dict_path
+            if dict_path
+            else os.path.join(
+                LibraryUtil.get_res_dir(), "word", "spelling", "spelling_en.txt"
+            )
+        )
         self.include_reverse = include_reverse
         self.model = self.get_model(force_reload=False)
 
@@ -72,7 +98,7 @@ class SpellingAug(WordAugmenter):
     def substitute(self, data):
         if not data or not data.strip():
             return data
-            
+
         change_seq = 0
         doc = Doc(data, self.tokenizer(data))
 
@@ -89,7 +115,7 @@ class SpellingAug(WordAugmenter):
                 continue
 
             candidate_words = self.model.predict(original_token)
-            substitute_token = ''
+            substitute_token = ""
             if candidate_words:
                 substitute_token = self.sample(candidate_words, 1)[0]
             else:
@@ -97,16 +123,27 @@ class SpellingAug(WordAugmenter):
                 substitute_token = original_token
 
             if aug_idx == 0:
-                substitute_token = self.align_capitalization(original_token, substitute_token)
+                substitute_token = self.align_capitalization(
+                    original_token, substitute_token
+                )
 
             change_seq += 1
-            doc.add_change_log(aug_idx, new_token=substitute_token, action=Action.SUBSTITUTE,
-                               change_seq=self.parent_change_seq + change_seq)
+            doc.add_change_log(
+                aug_idx,
+                new_token=substitute_token,
+                action=Action.SUBSTITUTE,
+                change_seq=self.parent_change_seq + change_seq,
+            )
 
         if self.include_detail:
-            return self.reverse_tokenizer(doc.get_augmented_tokens()), doc.get_change_logs()
+            return (
+                self.reverse_tokenizer(doc.get_augmented_tokens()),
+                doc.get_change_logs(),
+            )
         else:
             return self.reverse_tokenizer(doc.get_augmented_tokens())
 
     def get_model(self, force_reload):
-        return init_spelling_error_model(self.dict_path, self.include_reverse, force_reload)
+        return init_spelling_error_model(
+            self.dict_path, self.include_reverse, force_reload
+        )

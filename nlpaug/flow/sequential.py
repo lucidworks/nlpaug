@@ -19,9 +19,15 @@ class Sequential(Pipeline):
     >>> flow = naf.Sequential([nac.RandomCharAug(), naw.RandomWordAug()])
     """
 
-    def __init__(self, flow=None, name='Sequential_Pipeline', verbose=0):
-        Pipeline.__init__(self, name=name, action=Action.SEQUENTIAL, flow=flow, include_detail=False,
-                          verbose=verbose)
+    def __init__(self, flow=None, name="Sequential_Pipeline", verbose=0):
+        Pipeline.__init__(
+            self,
+            name=name,
+            action=Action.SEQUENTIAL,
+            flow=flow,
+            include_detail=False,
+            verbose=verbose,
+        )
 
     def draw(self):
         return True

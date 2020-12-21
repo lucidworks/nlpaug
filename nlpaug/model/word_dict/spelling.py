@@ -19,11 +19,11 @@ class Spelling(WordDictionary):
         self.read(self.dict_path)
 
     def read(self, model_path):
-        with open(model_path, 'r', encoding="utf-8") as f:
+        with open(model_path, "r", encoding="utf-8") as f:
             for line in f.readlines():
-                tokens = line.split(' ')
+                tokens = line.split(" ")
                 # Last token include newline separator
-                tokens[-1] = tokens[-1].replace('\n', '')
+                tokens[-1] = tokens[-1].replace("\n", "")
 
                 key = tokens[0]
                 values = tokens[1:]

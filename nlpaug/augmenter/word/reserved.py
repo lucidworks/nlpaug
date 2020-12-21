@@ -9,7 +9,7 @@ from nlpaug.util import Action, Doc
 
 
 class ReservedAug(WordAugmenter):
-    CONNECT_TOKEN = 'nnnnn'
+    CONNECT_TOKEN = "nnnnn"
     """
     Augmenter that apply target word replacement for augmentation.
 
@@ -30,12 +30,31 @@ class ReservedAug(WordAugmenter):
     >>> aug = naw.ReservedAug()
     """
 
-    def __init__(self, reserved_tokens, action=Action.SUBSTITUTE, case_sensitive=True, name='Reserved_Aug', 
-        aug_min=1, aug_max=10, aug_p=0.3, tokenizer=None, reverse_tokenizer=None, 
-        verbose=0):
+    def __init__(
+        self,
+        reserved_tokens,
+        action=Action.SUBSTITUTE,
+        case_sensitive=True,
+        name="Reserved_Aug",
+        aug_min=1,
+        aug_max=10,
+        aug_p=0.3,
+        tokenizer=None,
+        reverse_tokenizer=None,
+        verbose=0,
+    ):
         super().__init__(
-            action=action, name=name, aug_p=aug_p, aug_min=aug_min, aug_max=aug_max, tokenizer=tokenizer, 
-            reverse_tokenizer=reverse_tokenizer, device='cpu', verbose=verbose, include_detail=False)
+            action=action,
+            name=name,
+            aug_p=aug_p,
+            aug_min=aug_min,
+            aug_max=aug_max,
+            tokenizer=tokenizer,
+            reverse_tokenizer=reverse_tokenizer,
+            device="cpu",
+            verbose=verbose,
+            include_detail=False,
+        )
 
         self.reserved_tokens = reserved_tokens
         self.reserved_lower_tokens = []
@@ -47,7 +66,9 @@ class ReservedAug(WordAugmenter):
         self.reserved_phrase_regexs = []
 
         if not case_sensitive:
-            self.reserved_lower_tokens = [t.lower() for tokens in reserved_tokens for t in tokens]
+            self.reserved_lower_tokens = [
+                t.lower() for tokens in reserved_tokens for t in tokens
+            ]
 
         reserved_phrase_dict_by_len = defaultdict(list)
         for i, tokens in enumerate(reserved_tokens):
@@ -62,12 +83,14 @@ class ReservedAug(WordAugmenter):
                     self.reserved_token_dict[t] = i
                 else:
                     # For phrase
-                    reserved_phrase_dict_by_len[len(phrase_tokens)].append((t, phrase_tokens, i))
+                    reserved_phrase_dict_by_len[len(phrase_tokens)].append(
+                        (t, phrase_tokens, i)
+                    )
 
         for i in sorted(reserved_phrase_dict_by_len.keys(), reverse=True):
             for phrase, phrase_tokens, pos in reserved_phrase_dict_by_len[i]:
                 phrase_concat_token = self.CONNECT_TOKEN.join(phrase_tokens)
-                phrase_token_regex = re.compile('(' + phrase + ')', re.IGNORECASE)
+                phrase_token_regex = re.compile("(" + phrase + ")", re.IGNORECASE)
 
                 self.reserved_phrase_dict[phrase_concat_token] = pos
                 self.reserved_phrase_concats.append(phrase_concat_token)
@@ -87,19 +110,20 @@ class ReservedAug(WordAugmenter):
             elif t in self.reserved_phrase_dict:
                 # For phrase
                 results.append(idx)
-            
+
         return results
 
     def preprocess(self, data):
         for reserved_concat_phrase, reserved_phrase_regex in zip(
-            self.reserved_phrase_concats, self.reserved_phrase_regexs):
+            self.reserved_phrase_concats, self.reserved_phrase_regexs
+        ):
             data = reserved_phrase_regex.sub(reserved_concat_phrase, data)
         return data
 
     def substitute(self, data):
         if not data or not data.strip():
             return data
-            
+
         change_seq = 0
         data = self.preprocess(data)
         doc = Doc(data, self.tokenizer(data))
@@ -127,9 +151,15 @@ class ReservedAug(WordAugmenter):
                         candidate_tokens.append(t)
             elif original_token in self.reserved_phrase_concats:
                 candidate_tokens = []
-                for t in self.reserved_tokens[self.reserved_phrase_dict[original_token]]:
-                    compare_token = t.replace(' ', self.CONNECT_TOKEN)
-                    compare_token = compare_token.lower() if not self.case_sensitive else compare_token
+                for t in self.reserved_tokens[
+                    self.reserved_phrase_dict[original_token]
+                ]:
+                    compare_token = t.replace(" ", self.CONNECT_TOKEN)
+                    compare_token = (
+                        compare_token.lower()
+                        if not self.case_sensitive
+                        else compare_token
+                    )
                     if compare_token != original_token:
                         candidate_tokens.append(t)
 
@@ -138,10 +168,17 @@ class ReservedAug(WordAugmenter):
                 new_token = self.align_capitalization(original_token, new_token)
 
             change_seq += 1
-            doc.add_change_log(aug_idx, new_token=new_token, action=Action.SUBSTITUTE, change_seq=self.parent_change_seq+change_seq)
+            doc.add_change_log(
+                aug_idx,
+                new_token=new_token,
+                action=Action.SUBSTITUTE,
+                change_seq=self.parent_change_seq + change_seq,
+            )
 
         if self.include_detail:
-            return self.reverse_tokenizer(doc.get_augmented_tokens()), doc.get_change_logs()
+            return (
+                self.reverse_tokenizer(doc.get_augmented_tokens()),
+                doc.get_change_logs(),
+            )
         else:
             return self.reverse_tokenizer(doc.get_augmented_tokens())
-

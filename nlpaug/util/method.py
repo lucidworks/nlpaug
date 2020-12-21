@@ -1,13 +1,19 @@
 class Method:
-    CHAR = 'char'
-    WORD = 'word'
-    SENTENCE = 'sentence'
-    SPECTROGRAM = 'spectrogram'
-    AUDIO = 'audio'
+    CHAR = "char"
+    WORD = "word"
+    SENTENCE = "sentence"
+    SPECTROGRAM = "spectrogram"
+    AUDIO = "audio"
 
-    FLOW = 'flow'
+    FLOW = "flow"
 
     @staticmethod
     def getall():
-        return [Method.CHAR, Method.WORD, Method.SENTENCE, Method.AUDIO, Method.SPECTROGRAM, Method.FLOW]
-
+        return [
+            Method.CHAR,
+            Method.WORD,
+            Method.SENTENCE,
+            Method.AUDIO,
+            Method.SPECTROGRAM,
+            Method.FLOW,
+        ]

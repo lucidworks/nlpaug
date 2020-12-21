@@ -26,11 +26,27 @@ class MaskAug(AudioAugmenter):
     >>> aug = naa.MaskAug(sampling_rate=44010)
     """
 
-    def __init__(self, sampling_rate=None, zone=(0.2, 0.8), coverage=1., duration=None,
-        mask_with_noise=True, name='Mask_Aug', verbose=0, stateless=True):
+    def __init__(
+        self,
+        sampling_rate=None,
+        zone=(0.2, 0.8),
+        coverage=1.0,
+        duration=None,
+        mask_with_noise=True,
+        name="Mask_Aug",
+        verbose=0,
+        stateless=True,
+    ):
         super().__init__(
-            action=Action.SUBSTITUTE, zone=zone, coverage=coverage, duration=duration, 
-            name=name, device='cpu', verbose=verbose, stateless=stateless)
+            action=Action.SUBSTITUTE,
+            zone=zone,
+            coverage=coverage,
+            duration=duration,
+            name=name,
+            device="cpu",
+            verbose=verbose,
+            stateless=stateless,
+        )
 
         self.mask_with_noise = mask_with_noise
         self.model = nma.Mask()
@@ -41,5 +57,9 @@ class MaskAug(AudioAugmenter):
         if not self.stateless:
             self.start_pos, self.end_pos = start_pos, end_pos
 
-        return self.model.manipulate(data, start_pos=start_pos, end_pos=end_pos, 
-            mask_with_noise=self.mask_with_noise)
+        return self.model.manipulate(
+            data,
+            start_pos=start_pos,
+            end_pos=end_pos,
+            mask_with_noise=self.mask_with_noise,
+        )

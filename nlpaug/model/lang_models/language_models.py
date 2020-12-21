@@ -11,16 +11,26 @@ import nlpaug.util.selection.filtering as filtering
 
 
 class LanguageModels:
-    OPTIMIZE_ATTRIBUTES = ['external_memory', 'return_proba']
+    OPTIMIZE_ATTRIBUTES = ["external_memory", "return_proba"]
 
-    def __init__(self, device='cpu', temperature=1.0, top_k=100, top_p=0.01, optimize=None, silence=True):
+    def __init__(
+        self,
+        device="cpu",
+        temperature=1.0,
+        top_k=100,
+        top_p=0.01,
+        optimize=None,
+        silence=True,
+    ):
         try:
             import torch
         except ModuleNotFoundError:
-            raise ModuleNotFoundError('Missed torch library. Install torch by following https://pytorch.org/get-started/locally/`')
+            raise ModuleNotFoundError(
+                "Missed torch library. Install torch by following https://pytorch.org/get-started/locally/`"
+            )
 
         # self.device = 'cuda' if device is None and torch.cuda.is_available() else 'cpu'
-        self.device = device if device else 'cpu'
+        self.device = device if device else "cpu"
         self.temperature = temperature
         self.top_k = top_k
         self.top_p = top_p
@@ -30,8 +40,8 @@ class LanguageModels:
     @classmethod
     def get_default_optimize_config(cls):
         return {
-            'external_memory': 1024,  # GPT2 needs either zero or non-zero. XLNet needs number of extra memory tokens.
-            'return_proba': False
+            "external_memory": 1024,  # GPT2 needs either zero or non-zero. XLNet needs number of extra memory tokens.
+            "return_proba": False,
         }
 
     def init_optimize(self, optimize):
@@ -53,20 +63,20 @@ class LanguageModels:
 
     @classmethod
     def control_randomness(cls, logits, seed):
-        temperature = seed['temperature']
+        temperature = seed["temperature"]
         if temperature is not None:
             return logits / temperature
         return logits
 
     def filtering(self, logits, seed):
-        top_k = seed['top_k']
-        top_p = seed['top_p']
+        top_k = seed["top_k"]
+        top_p = seed["top_p"]
 
         check_top_k = False
         check_top_p = False
 
         if top_k is not None and 0 < top_k < len(logits):
-            logits, idxes = filtering.filter_top_k(logits, top_k, replace=-float('Inf'))
+            logits, idxes = filtering.filter_top_k(logits, top_k, replace=-float("Inf"))
             check_top_k = True
         if top_p is not None and 0 < top_p < 1:
             logits, idxes = filtering.nucleus_sampling(logits, top_p)
@@ -76,24 +86,25 @@ class LanguageModels:
         if not check_top_p:
             if check_top_k:
                 logits = logits.index_select(0, idxes)
-                if self.device == 'cuda':
+                if self.device == "cuda":
                     idxes = idxes.cpu()
                 idxes = idxes.detach().numpy().tolist()
             else:
                 idxes = np.arange(len(logits)).tolist()
         else:
-            logits = logits[:len(idxes)]
-            if self.device == 'cuda':
+            logits = logits[: len(idxes)]
+            if self.device == "cuda":
                 idxes = idxes.cpu()
             idxes = idxes.detach().numpy().tolist()
 
         return logits, idxes
 
     def pick(self, logits, idxes, target_word, n=1, include_punctuation=False):
-        candidate_ids, candidate_probas = self.prob_multinomial(logits, n=n*10)
+        candidate_ids, candidate_probas = self.prob_multinomial(logits, n=n * 10)
         candidate_ids = [idxes[candidate_id] for candidate_id in candidate_ids]
-        results = self.get_candidiates(candidate_ids, candidate_probas, target_word, n, 
-            include_punctuation)
+        results = self.get_candidiates(
+            candidate_ids, candidate_probas, target_word, n, include_punctuation
+        )
 
         return results
 
@@ -105,10 +116,14 @@ class LanguageModels:
         probas = F.softmax(logits, dim=-1)
 
         # Draw candidates
-        num_sample = min(n, torch.nonzero(probas, as_tuple=False).size(0))  # Number of potential candidate is small when top_k/ top_p are used.
-        filtered_top_n_ids = torch.multinomial(probas, num_samples=num_sample, replacement=False).tolist()
+        num_sample = min(
+            n, torch.nonzero(probas, as_tuple=False).size(0)
+        )  # Number of potential candidate is small when top_k/ top_p are used.
+        filtered_top_n_ids = torch.multinomial(
+            probas, num_samples=num_sample, replacement=False
+        ).tolist()
 
-        if self.optimize['return_proba']:
+        if self.optimize["return_proba"]:
             top_n_probas = [probas[_id] for _id in filtered_top_n_ids]
             return filtered_top_n_ids, top_n_probas
 
@@ -117,8 +132,14 @@ class LanguageModels:
     def is_skip_candidate(self, candidate):
         return False
 
-    def get_candidiates(self, candidate_ids, candidate_probas, target_word=None, n=1, 
-        include_punctuation=False):
+    def get_candidiates(
+        self,
+        candidate_ids,
+        candidate_probas,
+        target_word=None,
+        n=1,
+        include_punctuation=False,
+    ):
         # To have random behavior, NO sorting for candidate_probas.
         results = []
         if candidate_probas is None:
@@ -128,10 +149,16 @@ class LanguageModels:
             candidate_word = self.id2token(candidate_id)
 
             # unable to predict word
-            if candidate_word in ['', self.UNKNOWN_TOKEN, self.SUBWORD_PREFIX] or 'unused' in candidate_word:
+            if (
+                candidate_word in ["", self.UNKNOWN_TOKEN, self.SUBWORD_PREFIX]
+                or "unused" in candidate_word
+            ):
                 continue
             # predicted same word
-            if target_word is not None and candidate_word.lower() == target_word.lower():
+            if (
+                target_word is not None
+                and candidate_word.lower() == target_word.lower()
+            ):
                 continue
             # stop word
             if self.is_skip_candidate(candidate_word):

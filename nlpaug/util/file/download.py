@@ -17,7 +17,9 @@ class DownloadUtil:
 
         """
         DownloadUtil.download_from_google_drive(
-            _id='0B7XkCwpI5KDYNlNUTTlSS21pQmM', dest_dir=dest_dir, dest_file='GoogleNews-vectors-negative300.zip'
+            _id="0B7XkCwpI5KDYNlNUTTlSS21pQmM",
+            dest_dir=dest_dir,
+            dest_file="GoogleNews-vectors-negative300.zip",
         )
 
     @staticmethod
@@ -31,18 +33,25 @@ class DownloadUtil:
 
         """
 
-        url = ''
-        if model_name == 'glove.6B':
-            url = 'http://nlp.stanford.edu/data/glove.6B.zip'
-        elif model_name == 'glove.42B.300d':
-            url = 'http://nlp.stanford.edu/data/glove.42B.300d.zip'
-        elif model_name == 'glove.840B.300d':
-            url = 'http://nlp.stanford.edu/data/glove.840B.300d.zip'
-        elif model_name == 'glove.twitter.27B':
-            url = 'http://nlp.stanford.edu/data/glove.twitter.27B.zip',
+        url = ""
+        if model_name == "glove.6B":
+            url = "http://nlp.stanford.edu/data/glove.6B.zip"
+        elif model_name == "glove.42B.300d":
+            url = "http://nlp.stanford.edu/data/glove.42B.300d.zip"
+        elif model_name == "glove.840B.300d":
+            url = "http://nlp.stanford.edu/data/glove.840B.300d.zip"
+        elif model_name == "glove.twitter.27B":
+            url = ("http://nlp.stanford.edu/data/glove.twitter.27B.zip",)
         else:
-            possible_values = ['glove.6B', 'glove.42B.300d', 'glove.840B.300d', 'glove.twitter.27B']
-            raise ValueError('Unknown model_name. Possible values are {}'.format(possible_values))
+            possible_values = [
+                "glove.6B",
+                "glove.42B.300d",
+                "glove.840B.300d",
+                "glove.twitter.27B",
+            ]
+            raise ValueError(
+                "Unknown model_name. Possible values are {}".format(possible_values)
+            )
 
         file_path = DownloadUtil.download(url, dest_dir=dest_dir)
         DownloadUtil.unzip(file_path)
@@ -58,25 +67,27 @@ class DownloadUtil:
 
         """
 
-        url = ''
-        if model_name == 'wiki-news-300d-1M':
-            url = 'https://dl.fbaipublicfiles.com/fasttext/vectors-english/wiki-news-300d-1M.vec.zip'
+        url = ""
+        if model_name == "wiki-news-300d-1M":
+            url = "https://dl.fbaipublicfiles.com/fasttext/vectors-english/wiki-news-300d-1M.vec.zip"
         # elif model_name == 'wiki-news-300d-1M-subword':
         #     url = 'https://dl.fbaipublicfiles.com/fasttext/vectors-english/wiki-news-300d-1M-subword.vec.zip'
-        elif model_name == 'crawl-300d-2M':
-            url = 'https://dl.fbaipublicfiles.com/fasttext/vectors-english/crawl-300d-2M.vec.zip'
+        elif model_name == "crawl-300d-2M":
+            url = "https://dl.fbaipublicfiles.com/fasttext/vectors-english/crawl-300d-2M.vec.zip"
         # elif model_name == 'crawl-300d-2M-subword':
         #     url = 'https://dl.fbaipublicfiles.com/fasttext/vectors-english/crawl-300d-2M-subword.zip'
         else:
-            possible_values = ['wiki-news-300d-1M', 'crawl-300d-2M']
-            raise ValueError('Unknown model_name. Possible values are {}'.format(possible_values))
+            possible_values = ["wiki-news-300d-1M", "crawl-300d-2M"]
+            raise ValueError(
+                "Unknown model_name. Possible values are {}".format(possible_values)
+            )
 
         file_path = DownloadUtil.download(url, dest_dir=dest_dir)
         DownloadUtil.unzip(file_path)
 
     @staticmethod
     def download_back_translation(dest_dir):
-        url = 'https://storage.googleapis.com/uda_model/text/back_trans_checkpoints.zip'
+        url = "https://storage.googleapis.com/uda_model/text/back_trans_checkpoints.zip"
         file_path = DownloadUtil.download(url, dest_dir=dest_dir)
         DownloadUtil.unzip(file_path)
 
@@ -91,7 +102,7 @@ class DownloadUtil:
         if not os.path.exists(dest_dir + dest_file):
             req = urllib.request.Request(src)
             file = urllib.request.urlopen(req)
-            with open(os.path.join(dest_dir, dest_file), 'wb') as output:
+            with open(os.path.join(dest_dir, dest_file), "wb") as output:
                 output.write(file.read())
         return os.path.join(dest_dir, dest_file)
 
@@ -107,7 +118,7 @@ class DownloadUtil:
         if dest_dir is None:
             dest_dir = os.path.dirname(file_path)
 
-        if file_path.endswith('.zip'):
+        if file_path.endswith(".zip"):
             with zipfile.ZipFile(file_path, "r") as zip_ref:
                 zip_ref.extractall(dest_dir)
         elif file_path.endswith("tar.gz") or file_path.endswith("tgz"):
@@ -125,7 +136,7 @@ class DownloadUtil:
 
         def get_confirm_token(response):
             for key, value in response.cookies.items():
-                if key.startswith('download_warning'):
+                if key.startswith("download_warning"):
                     return value
 
             return None
@@ -140,11 +151,11 @@ class DownloadUtil:
 
         session = requests.Session()
 
-        response = session.get(url, params={'id': _id}, stream=True)
+        response = session.get(url, params={"id": _id}, stream=True)
         token = get_confirm_token(response)
 
         if token:
-            params = {'id': _id, 'confirm': token}
+            params = {"id": _id, "confirm": token}
             response = session.get(url, params=params, stream=True)
 
         save_response_content(response, os.path.join(dest_dir, dest_file))

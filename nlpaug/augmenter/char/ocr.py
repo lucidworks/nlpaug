@@ -33,14 +33,41 @@ class OcrAug(CharAugmenter):
     >>> aug = nac.OcrAug()
     """
 
-    def __init__(self, name='OCR_Aug', aug_char_min=1, aug_char_max=10, aug_char_p=0.3,
-                 aug_word_p=0.3, aug_word_min=1, aug_word_max=10, stopwords=None,
-                 tokenizer=None, reverse_tokenizer=None, verbose=0, stopwords_regex=None, min_char=1):
+    def __init__(
+        self,
+        name="OCR_Aug",
+        aug_char_min=1,
+        aug_char_max=10,
+        aug_char_p=0.3,
+        aug_word_p=0.3,
+        aug_word_min=1,
+        aug_word_max=10,
+        stopwords=None,
+        tokenizer=None,
+        reverse_tokenizer=None,
+        verbose=0,
+        stopwords_regex=None,
+        min_char=1,
+    ):
         super().__init__(
-            action=Action.SUBSTITUTE, name=name, min_char=min_char, aug_char_min=aug_char_min, aug_char_max=aug_char_max,
-            aug_char_p=aug_char_p, aug_word_min=aug_word_min, aug_word_max=aug_word_max, aug_word_p=aug_word_p,
-            tokenizer=tokenizer, reverse_tokenizer=reverse_tokenizer, stopwords=stopwords, device='cpu',
-            verbose=verbose, stopwords_regex=stopwords_regex, include_special_char=True, include_detail=False)
+            action=Action.SUBSTITUTE,
+            name=name,
+            min_char=min_char,
+            aug_char_min=aug_char_min,
+            aug_char_max=aug_char_max,
+            aug_char_p=aug_char_p,
+            aug_word_min=aug_word_min,
+            aug_word_max=aug_word_max,
+            aug_word_p=aug_word_p,
+            tokenizer=tokenizer,
+            reverse_tokenizer=reverse_tokenizer,
+            stopwords=stopwords,
+            device="cpu",
+            verbose=verbose,
+            stopwords_regex=stopwords_regex,
+            include_special_char=True,
+            include_detail=False,
+        )
 
         self.model = self.get_model()
 
@@ -57,21 +84,31 @@ class OcrAug(CharAugmenter):
     def substitute(self, data):
         if not data or not data.strip():
             return data
-            
+
         change_seq = 0
 
         doc = Doc(data, self.tokenizer(data))
         aug_word_idxes = self._get_aug_idxes(
-            doc.get_original_tokens(), self.aug_word_min, self.aug_word_max, self.aug_word_p, Method.WORD)
+            doc.get_original_tokens(),
+            self.aug_word_min,
+            self.aug_word_max,
+            self.aug_word_p,
+            Method.WORD,
+        )
 
         for token_i, token in enumerate(doc.get_original_tokens()):
             if token_i not in aug_word_idxes:
                 continue
 
-            substitute_token = ''
+            substitute_token = ""
             chars = self.token2char(token)
-            aug_char_idxes = self._get_aug_idxes(chars, self.aug_char_min, self.aug_char_max, self.aug_char_p,
-                                                 Method.CHAR)
+            aug_char_idxes = self._get_aug_idxes(
+                chars,
+                self.aug_char_min,
+                self.aug_char_max,
+                self.aug_char_p,
+                Method.CHAR,
+            )
             if aug_char_idxes is None:
                 continue
 
@@ -85,11 +122,18 @@ class OcrAug(CharAugmenter):
             # No capitalization alignment as this augmenter try to OCR engine error
 
             change_seq += 1
-            doc.add_change_log(token_i, new_token=substitute_token, action=Action.SUBSTITUTE,
-                               change_seq=self.parent_change_seq+change_seq)
+            doc.add_change_log(
+                token_i,
+                new_token=substitute_token,
+                action=Action.SUBSTITUTE,
+                change_seq=self.parent_change_seq + change_seq,
+            )
 
         if self.include_detail:
-            return self.reverse_tokenizer(doc.get_augmented_tokens()), doc.get_change_logs()
+            return (
+                self.reverse_tokenizer(doc.get_augmented_tokens()),
+                doc.get_change_logs(),
+            )
         else:
             return self.reverse_tokenizer(doc.get_augmented_tokens())
 

@@ -12,7 +12,7 @@ class RandomWordAug(WordAugmenter):
 
     :param str action: 'substitute', 'swap', 'delete' or 'crop'. If value is 'swap', adjacent words will be swapped randomly.
         If value is 'delete', word will be removed randomly. If value is 'crop', a set of contunous word will be removed randomly.
-    :param float aug_p: Percentage of word will be augmented. 
+    :param float aug_p: Percentage of word will be augmented.
     :param int aug_min: Minimum number of word will be augmented.
     :param int aug_max: Maximum number of word will be augmented. If None is passed, number of augmentation is
         calculated via aup_p. If calculated result from aug_p is smaller than aug_max, will use calculated result from
@@ -28,15 +28,36 @@ class RandomWordAug(WordAugmenter):
     >>> aug = naw.RandomWordAug()
     """
 
-    def __init__(self, action=Action.DELETE, name='RandomWord_Aug', aug_min=1, aug_max=10, aug_p=0.3, stopwords=None,
-                 target_words=None, tokenizer=None, reverse_tokenizer=None, stopwords_regex=None, 
-                 verbose=0):
+    def __init__(
+        self,
+        action=Action.DELETE,
+        name="RandomWord_Aug",
+        aug_min=1,
+        aug_max=10,
+        aug_p=0.3,
+        stopwords=None,
+        target_words=None,
+        tokenizer=None,
+        reverse_tokenizer=None,
+        stopwords_regex=None,
+        verbose=0,
+    ):
         super().__init__(
-            action=action, name=name, aug_p=aug_p, aug_min=aug_min, aug_max=aug_max, stopwords=stopwords,
-            tokenizer=tokenizer, reverse_tokenizer=reverse_tokenizer, device='cpu', verbose=verbose,
-            stopwords_regex=stopwords_regex, include_detail=False)
+            action=action,
+            name=name,
+            aug_p=aug_p,
+            aug_min=aug_min,
+            aug_max=aug_max,
+            stopwords=stopwords,
+            tokenizer=tokenizer,
+            reverse_tokenizer=reverse_tokenizer,
+            device="cpu",
+            verbose=verbose,
+            stopwords_regex=stopwords_regex,
+            include_detail=False,
+        )
 
-        self.target_words = ['_'] if target_words is None else target_words
+        self.target_words = ["_"] if target_words is None else target_words
 
     # https://arxiv.org/pdf/1711.02173.pdf, https://arxiv.org/pdf/1809.02079.pdf, https://arxiv.org/pdf/1903.09460.pdf
     def swap(self, data):
@@ -60,7 +81,10 @@ class RandomWordAug(WordAugmenter):
             doc = self.change_case(doc, aug_idx, swap_idx, change_seq)
 
         if self.include_detail:
-            return self.reverse_tokenizer(doc.get_augmented_tokens()), doc.get_change_logs()
+            return (
+                self.reverse_tokenizer(doc.get_augmented_tokens()),
+                doc.get_change_logs(),
+            )
         else:
             return self.reverse_tokenizer(doc.get_augmented_tokens())
 
@@ -70,49 +94,89 @@ class RandomWordAug(WordAugmenter):
         swap_token = doc.get_token(swap_word_idx).get_latest_token().token
 
         if original_word_idx != 0 and swap_word_idx != 0:
-            doc.add_change_log(original_word_idx, new_token=swap_token, action=Action.SWAP,
-                               change_seq=self.parent_change_seq+change_seq)
-            doc.add_change_log(swap_word_idx, new_token=original_token, action=Action.SWAP,
-                               change_seq=self.parent_change_seq+change_seq)
+            doc.add_change_log(
+                original_word_idx,
+                new_token=swap_token,
+                action=Action.SWAP,
+                change_seq=self.parent_change_seq + change_seq,
+            )
+            doc.add_change_log(
+                swap_word_idx,
+                new_token=original_token,
+                action=Action.SWAP,
+                change_seq=self.parent_change_seq + change_seq,
+            )
             return doc
 
         original_token_case = self.get_word_case(original_token)
         swap_token_case = self.get_word_case(swap_token)
 
         if original_word_idx == 0:
-            if original_token_case == 'capitalize' and swap_token_case == 'lower':
-                doc.add_change_log(original_word_idx, new_token=swap_token.capitalize(),
-                                   action=Action.SWAP, change_seq=self.parent_change_seq+change_seq)
+            if original_token_case == "capitalize" and swap_token_case == "lower":
+                doc.add_change_log(
+                    original_word_idx,
+                    new_token=swap_token.capitalize(),
+                    action=Action.SWAP,
+                    change_seq=self.parent_change_seq + change_seq,
+                )
             else:
-                doc.add_change_log(original_word_idx, new_token=swap_token,
-                                   action=Action.SWAP, change_seq=self.parent_change_seq+change_seq)
-            if original_token_case == 'capitalize':
-                doc.add_change_log(swap_word_idx, new_token=original_token.lower(),
-                                   action=Action.SWAP, change_seq=self.parent_change_seq+change_seq)
+                doc.add_change_log(
+                    original_word_idx,
+                    new_token=swap_token,
+                    action=Action.SWAP,
+                    change_seq=self.parent_change_seq + change_seq,
+                )
+            if original_token_case == "capitalize":
+                doc.add_change_log(
+                    swap_word_idx,
+                    new_token=original_token.lower(),
+                    action=Action.SWAP,
+                    change_seq=self.parent_change_seq + change_seq,
+                )
             else:
-                doc.add_change_log(swap_word_idx, new_token=original_token,
-                                   action=Action.SWAP, change_seq=self.parent_change_seq+change_seq)
+                doc.add_change_log(
+                    swap_word_idx,
+                    new_token=original_token,
+                    action=Action.SWAP,
+                    change_seq=self.parent_change_seq + change_seq,
+                )
 
         if swap_word_idx == 0:
-            if original_token_case == 'lower':
-                doc.add_change_log(swap_word_idx, new_token=original_token.capitalize(),
-                                   action=Action.SWAP, change_seq=self.parent_change_seq+change_seq)
+            if original_token_case == "lower":
+                doc.add_change_log(
+                    swap_word_idx,
+                    new_token=original_token.capitalize(),
+                    action=Action.SWAP,
+                    change_seq=self.parent_change_seq + change_seq,
+                )
             else:
-                doc.add_change_log(swap_word_idx, new_token=original_token,
-                                   action=Action.SWAP, change_seq=self.parent_change_seq+change_seq)
+                doc.add_change_log(
+                    swap_word_idx,
+                    new_token=original_token,
+                    action=Action.SWAP,
+                    change_seq=self.parent_change_seq + change_seq,
+                )
 
-            if swap_token_case == 'capitalize':
-                doc.add_change_log(original_word_idx, new_token=swap_token.lower(),
-                                   action=Action.SWAP, change_seq=self.parent_change_seq+change_seq)
+            if swap_token_case == "capitalize":
+                doc.add_change_log(
+                    original_word_idx,
+                    new_token=swap_token.lower(),
+                    action=Action.SWAP,
+                    change_seq=self.parent_change_seq + change_seq,
+                )
             else:
-                doc.add_change_log(original_word_idx, new_token=swap_token,
-                                   action=Action.SWAP, change_seq=self.parent_change_seq+change_seq)
+                doc.add_change_log(
+                    original_word_idx,
+                    new_token=swap_token,
+                    action=Action.SWAP,
+                    change_seq=self.parent_change_seq + change_seq,
+                )
 
         # Special case for i
-        if doc.get_token(original_word_idx).get_latest_token().token == 'i':
-            doc.update_change_log(original_word_idx, token='I')
-        if doc.get_token(swap_word_idx).get_latest_token().token == 'i':
-            doc.update_change_log(swap_word_idx, token='I')
+        if doc.get_token(original_word_idx).get_latest_token().token == "i":
+            doc.update_change_log(original_word_idx, token="I")
+        if doc.get_token(swap_word_idx).get_latest_token().token == "i":
+            doc.update_change_log(swap_word_idx, token="I")
 
         return doc
 
@@ -150,10 +214,18 @@ class RandomWordAug(WordAugmenter):
                 new_token = self.align_capitalization(original_token, new_token)
 
             change_seq += 1
-            doc.add_change_log(aug_idx, new_token=new_token, action=Action.SUBSTITUTE, change_seq=self.parent_change_seq+change_seq)
+            doc.add_change_log(
+                aug_idx,
+                new_token=new_token,
+                action=Action.SUBSTITUTE,
+                change_seq=self.parent_change_seq + change_seq,
+            )
 
         if self.include_detail:
-            return self.reverse_tokenizer(doc.get_augmented_tokens()), doc.get_change_logs()
+            return (
+                self.reverse_tokenizer(doc.get_augmented_tokens()),
+                doc.get_change_logs(),
+            )
         else:
             return self.reverse_tokenizer(doc.get_augmented_tokens())
 
@@ -161,7 +233,7 @@ class RandomWordAug(WordAugmenter):
     def delete(self, data):
         if not data or not data.strip():
             return data
-            
+
         change_seq = 0
         doc = Doc(data, self.tokenizer(data))
 
@@ -178,13 +250,28 @@ class RandomWordAug(WordAugmenter):
             original_token = doc.get_token(aug_idx).orig_token.token
 
             change_seq += 1
-            doc.add_change_log(aug_idx, new_token='', action=Action.DELETE, change_seq=self.parent_change_seq+change_seq)
+            doc.add_change_log(
+                aug_idx,
+                new_token="",
+                action=Action.DELETE,
+                change_seq=self.parent_change_seq + change_seq,
+            )
             if aug_idx == 0:
-                new_token = self.align_capitalization(original_token, doc.get_token(1).orig_token.token)
-                doc.add_change_log(1, new_token=new_token, action=Action.ALIGN, change_seq=self.parent_change_seq+change_seq)
+                new_token = self.align_capitalization(
+                    original_token, doc.get_token(1).orig_token.token
+                )
+                doc.add_change_log(
+                    1,
+                    new_token=new_token,
+                    action=Action.ALIGN,
+                    change_seq=self.parent_change_seq + change_seq,
+                )
 
         if self.include_detail:
-            return self.reverse_tokenizer(doc.get_augmented_tokens()), doc.get_change_logs()
+            return (
+                self.reverse_tokenizer(doc.get_augmented_tokens()),
+                doc.get_change_logs(),
+            )
         else:
             return self.reverse_tokenizer(doc.get_augmented_tokens())
 
@@ -208,12 +295,27 @@ class RandomWordAug(WordAugmenter):
         for aug_idx in aug_idxes:
             original_token = doc.get_token(aug_idx).orig_token.token
 
-            doc.add_change_log(aug_idx, new_token='', action=Action.CROP, change_seq=self.parent_change_seq+change_seq)
+            doc.add_change_log(
+                aug_idx,
+                new_token="",
+                action=Action.CROP,
+                change_seq=self.parent_change_seq + change_seq,
+            )
             if aug_idx == 0:
-                new_token = self.align_capitalization(original_token, doc.get_token(1).orig_token.token)
-                doc.add_change_log(1, new_token=new_token, action=Action.ALIGN, change_seq=self.parent_change_seq+change_seq)
+                new_token = self.align_capitalization(
+                    original_token, doc.get_token(1).orig_token.token
+                )
+                doc.add_change_log(
+                    1,
+                    new_token=new_token,
+                    action=Action.ALIGN,
+                    change_seq=self.parent_change_seq + change_seq,
+                )
 
         if self.include_detail:
-            return self.reverse_tokenizer(doc.get_augmented_tokens()), doc.get_change_logs()
+            return (
+                self.reverse_tokenizer(doc.get_augmented_tokens()),
+                doc.get_change_logs(),
+            )
         else:
             return self.reverse_tokenizer(doc.get_augmented_tokens())

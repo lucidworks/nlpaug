@@ -8,19 +8,22 @@ import nlpaug.augmenter.word as naw
 class TestSynonym(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        env_config_path = os.path.abspath(os.path.join(
-            os.path.dirname(__file__), '..', '..', '..', '.env'))
+        env_config_path = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "..", "..", "..", ".env")
+        )
         load_dotenv(env_config_path)
 
-        ppdb_model_file_path = os.path.join(os.environ.get("MODEL_DIR"), 'word', 'ppdb', 'ppdb-2.0-s-all')
+        ppdb_model_file_path = os.path.join(
+            os.environ.get("MODEL_DIR"), "word", "ppdb", "ppdb-2.0-s-all"
+        )
 
         cls.augs = [
-            naw.SynonymAug(aug_src='wordnet'),
-            naw.SynonymAug(aug_src='ppdb', model_path=ppdb_model_file_path)
+            naw.SynonymAug(aug_src="wordnet"),
+            naw.SynonymAug(aug_src="ppdb", model_path=ppdb_model_file_path),
         ]
 
     def test_substitute(self):
-        text = 'The quick brown fox jumps over the lazy dog'
+        text = "The quick brown fox jumps over the lazy dog"
 
         retry_cnt = 10
         for aug in self.augs:
@@ -38,12 +41,12 @@ class TestSynonym(unittest.TestCase):
             self.assertTrue(passed)
 
     def test_stopwords(self):
-        text = 'The quick brown fox jumps over the lazy dog'
+        text = "The quick brown fox jumps over the lazy dog"
 
         retry_cnt = 10
         for aug in self.augs:
             original_stopwords = aug.stopwords
-            aug.stopwords = ['quick', 'brown', 'fox']
+            aug.stopwords = ["quick", "brown", "fox"]
 
             passed = False
             for _ in range(retry_cnt):
@@ -67,7 +70,7 @@ class TestSynonym(unittest.TestCase):
 
         aug = self.augs[0]  # WordNet only
         augmented_text = aug.augment(text)
-        for separator in ['-', '_']:
+        for separator in ["-", "_"]:
             self.assertNotIn(separator, augmented_text)
         self.assertNotEqual(text, augmented_text)
 
@@ -77,10 +80,7 @@ class TestSynonym(unittest.TestCase):
         :return:
         """
 
-        texts = [
-            "I a",
-            'I'
-        ]
+        texts = ["I a", "I"]
 
         aug = self.augs[0]  # WordNet only
         for text in texts:
@@ -103,7 +103,7 @@ class TestSynonym(unittest.TestCase):
         self.assertLess(0, len(texts))
 
     def test_skip_punctuation(self):
-        text = '. . . . ! ? # @'
+        text = ". . . . ! ? # @"
 
         for aug in self.augs:
             augmented_text = aug.augment(text)
@@ -113,25 +113,48 @@ class TestSynonym(unittest.TestCase):
         # import nltk
         # nltk.download('omw')
         # French
-        text = 'chien'
+        text = "chien"
         expected_texts = [
-            'cliquer', 'clic', 'aboyeur', 'hot dog', 'franc', 'canis familiaris', 'achille', 'toutou',
-            'cliquet', 'clébard', 'talon', 'chienchien', 'quignon', 'chien de chasse']
-        aug = naw.SynonymAug(aug_src='wordnet', lang='fra')
+            "cliquer",
+            "clic",
+            "aboyeur",
+            "hot dog",
+            "franc",
+            "canis familiaris",
+            "achille",
+            "toutou",
+            "cliquet",
+            "clébard",
+            "talon",
+            "chienchien",
+            "quignon",
+            "chien de chasse",
+        ]
+        aug = naw.SynonymAug(aug_src="wordnet", lang="fra")
         augmented_text = aug.augment(text)
         self.assertTrue(augmented_text in expected_texts)
 
         expected_texts = [
-            'toutou', 'maître chien', 'clébard', 'dog', 'chienne', 'chiens', 'chiot', 'cynophiles', 'clebs'
+            "toutou",
+            "maître chien",
+            "clébard",
+            "dog",
+            "chienne",
+            "chiens",
+            "chiot",
+            "cynophiles",
+            "clebs",
         ]
-        model_path = os.path.join(os.environ.get("MODEL_DIR"), 'word', 'ppdb', 'ppdb-1.0-s-lexical-french')
-        aug = naw.SynonymAug(aug_src='ppdb', model_path=model_path)
+        model_path = os.path.join(
+            os.environ.get("MODEL_DIR"), "word", "ppdb", "ppdb-1.0-s-lexical-french"
+        )
+        aug = naw.SynonymAug(aug_src="ppdb", model_path=model_path)
         augmented_text = aug.augment(text)
         self.assertTrue(augmented_text in expected_texts)
 
         # Spanish
-        text = 'Un rápido zorro marrón salta sobre el perro perezoso'
-        aug = naw.SynonymAug(aug_src='wordnet', lang='spa')
+        text = "Un rápido zorro marrón salta sobre el perro perezoso"
+        aug = naw.SynonymAug(aug_src="wordnet", lang="spa")
         for _ in range(10):
             augmented_text = aug.augment(text)
             if augmented_text != text:
@@ -141,11 +164,13 @@ class TestSynonym(unittest.TestCase):
 
     # https://github.com/makcedward/nlpaug/issues/99
     def test_reload(self):
-        text = 'The quick brown fox jumps over the lazy dog'
+        text = "The quick brown fox jumps over the lazy dog"
 
-        aug = naw.SynonymAug(aug_src='wordnet')
+        aug = naw.SynonymAug(aug_src="wordnet")
         self.assertNotEqual(text, aug.augment(text))
 
-        model_path = os.path.join(os.environ.get("MODEL_DIR"), 'word', 'ppdb', 'ppdb-2.0-s-all')
-        aug2 = naw.SynonymAug(aug_src='ppdb', model_path=model_path)
+        model_path = os.path.join(
+            os.environ.get("MODEL_DIR"), "word", "ppdb", "ppdb-2.0-s-all"
+        )
+        aug2 = naw.SynonymAug(aug_src="ppdb", model_path=model_path)
         self.assertNotEqual(text, aug2.augment(text))

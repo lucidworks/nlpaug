@@ -1,5 +1,3 @@
-
-
 class Augment:
     def __init__(self, pos, original, new):
         self.pos = pos

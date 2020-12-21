@@ -2,12 +2,30 @@ import random
 import numpy as np
 from multiprocessing.dummy import Pool as ThreadPool
 
-from nlpaug.util import Action, Method, WarningException, WarningName, WarningCode, WarningMessage
+from nlpaug.util import (
+    Action,
+    Method,
+    WarningException,
+    WarningName,
+    WarningCode,
+    WarningMessage,
+)
 
 
 class Augmenter:
-    def __init__(self, name, method, action, aug_min, aug_max, aug_p=0.1, device='cpu', 
-        include_detail=False, parallelable=False, verbose=0):
+    def __init__(
+        self,
+        name,
+        method,
+        action,
+        aug_min,
+        aug_max,
+        aug_p=0.1,
+        device="cpu",
+        include_detail=False,
+        parallelable=False,
+        verbose=0,
+    ):
 
         self.name = name
         self.action = action
@@ -28,26 +46,34 @@ class Augmenter:
     def _validate_augmenter(cls, method, action):
         if method not in Method.getall():
             raise ValueError(
-                'Method must be one of {} while {} is passed'.format(Method.getall(), method))
+                "Method must be one of {} while {} is passed".format(
+                    Method.getall(), method
+                )
+            )
 
         if action not in Action.getall():
             raise ValueError(
-                'Action must be one of {} while {} is passed'.format(Action.getall(), action))
+                "Action must be one of {} while {} is passed".format(
+                    Action.getall(), action
+                )
+            )
 
     def augment(self, data, n=1, num_thread=1):
         """
-        :param object/list data: Data for augmentation. It can be list of data (e.g. list 
+        :param object/list data: Data for augmentation. It can be list of data (e.g. list
             of string or numpy) or single element (e.g. string or numpy)
-        :param int n: Default is 1. Number of unique augmented output. Will be force to 1 
+        :param int n: Default is 1. Number of unique augmented output. Will be force to 1
             if input is list of data
-        :param int num_thread: Number of thread for data augmentation. Use this option 
+        :param int num_thread: Number of thread for data augmentation. Use this option
             when you are using CPU and n is larger than 1
         :return: Augmented data
 
         >>> augmented_data = aug.augment(data)
 
         """
-        max_retry_times = 3  # max loop times of n to generate expected number of outputs
+        max_retry_times = (
+            3  # max loop times of n to generate expected number of outputs
+        )
         aug_num = 1 if isinstance(data, list) else n
         expected_output_num = len(data) if isinstance(data, list) else aug_num
 
@@ -60,7 +86,7 @@ class Augmenter:
 
                 # Return empty value per data type
                 if isinstance(data, str):
-                    return ''
+                    return ""
                 elif isinstance(data, list):
                     return []
                 elif isinstance(data, np.ndarray):
@@ -83,7 +109,7 @@ class Augmenter:
         elif self.action == Action.SPLIT:
             action_fx = self.split
 
-        for _ in range(max_retry_times+1):
+        for _ in range(max_retry_times + 1):
             augmented_results = []
 
             # E.g. PyTorch's augmenter (ContextualWordEmbsAug, ContextualWordEmbsForSentenceAug, BackTranslationAug)
@@ -106,18 +132,25 @@ class Augmenter:
 
                 # Multi Thread
                 else:
-                    batch_data = [data[i:i+num_thread] for i in range(0, len(data), num_thread)]
+                    batch_data = [
+                        data[i : i + num_thread]
+                        for i in range(0, len(data), num_thread)
+                    ]
                     for mini_batch_data in batch_data:
-                        augmented_results.extend(self._parallel_augments(self.augment, mini_batch_data))
+                        augmented_results.extend(
+                            self._parallel_augments(self.augment, mini_batch_data)
+                        )
 
             # Single input with/without multiple input
             else:
-                augmented_results = self._parallel_augment(action_fx, clean_data, n=n, num_thread=num_thread)
+                augmented_results = self._parallel_augment(
+                    action_fx, clean_data, n=n, num_thread=num_thread
+                )
 
             if len(augmented_results) >= expected_output_num:
                 break
 
-         # TODO: standardize output to list even though n=1 from 1.0.0
+        # TODO: standardize output to list even though n=1 from 1.0.0
         if len(augmented_results) == 0:
             # if not result, return itself
             if n == 1:
@@ -165,8 +198,13 @@ class Augmenter:
     @classmethod
     def _validate_augment(cls, data):
         if data is None or len(data) == 0:
-            return [WarningException(name=WarningName.INPUT_VALIDATION_WARNING,
-                                     code=WarningCode.WARNING_CODE_001, msg=WarningMessage.LENGTH_IS_ZERO)]
+            return [
+                WarningException(
+                    name=WarningName.INPUT_VALIDATION_WARNING,
+                    code=WarningCode.WARNING_CODE_001,
+                    msg=WarningMessage.LENGTH_IS_ZERO,
+                )
+            ]
 
         return []
 
@@ -199,7 +237,7 @@ class Augmenter:
         raise NotImplementedError
 
     def crop(self, data):
-        raise NotImplementedError        
+        raise NotImplementedError
 
     def split(self, data):
         raise NotImplementedError
@@ -223,7 +261,7 @@ class Augmenter:
         if isinstance(x, list):
             return random.sample(x, num)
         elif isinstance(x, int):
-            return np.random.randint(1, x-1)
+            return np.random.randint(1, x - 1)
 
     @classmethod
     def clean(cls, data):
@@ -254,4 +292,6 @@ class Augmenter:
         return aug_idxes
 
     def __str__(self):
-        return 'Name:{}, Action:{}, Method:{}'.format(self.name, self.action, self.method)
+        return "Name:{}, Action:{}, Method:{}".format(
+            self.name, self.action, self.method
+        )

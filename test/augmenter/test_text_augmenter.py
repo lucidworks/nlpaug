@@ -11,18 +11,19 @@ import nlpaug.augmenter.sentence as nas
 class TestTextAugmenter(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        env_config_path = os.path.abspath(os.path.join(
-            os.path.dirname(__file__), '..', '..', '.env'))
+        env_config_path = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "..", "..", ".env")
+        )
         load_dotenv(env_config_path)
 
         cls.textual_augs = [
             nac.RandomCharAug(),
             naw.ContextualWordEmbsAug(),
-            nas.ContextualWordEmbsForSentenceAug()
+            nas.ContextualWordEmbsForSentenceAug(),
         ]
 
     def test_augmenter_n_output(self):
-        text = 'The quick brown fox jumps over the lazy dog'
+        text = "The quick brown fox jumps over the lazy dog"
         n = 3
         for aug in self.textual_augs:
             augmented_texts = aug.augment(text, n=n)
@@ -31,24 +32,24 @@ class TestTextAugmenter(unittest.TestCase):
                 self.assertNotEqual(augmented_text, text)
 
         for aug in self.textual_augs:
-            augmented_texts = aug.augment([text]*2, n=1, num_thread=1)
+            augmented_texts = aug.augment([text] * 2, n=1, num_thread=1)
             self.assertGreater(len(augmented_texts), 1)
             for augmented_text in augmented_texts:
                 self.assertNotEqual(augmented_text, text)
 
     def test_augmenter_n_output_thread(self):
-        text = 'The quick brown fox jumps over the lazy dog'
+        text = "The quick brown fox jumps over the lazy dog"
         n = 3
         for aug in self.textual_augs:
-            augmented_texts = aug.augment([text]*2, n=n, num_thread=n)
+            augmented_texts = aug.augment([text] * 2, n=n, num_thread=n)
             self.assertGreater(len(augmented_texts), 1)
             for augmented_text in augmented_texts:
                 self.assertNotEqual(augmented_text, text)
 
     def test_multiprocess_gpu(self):
-        text = 'The quick brown fox jumps over the lazy dog'
+        text = "The quick brown fox jumps over the lazy dog"
         n = 3
-        aug = naw.ContextualWordEmbsAug(force_reload=True, device='cuda')
+        aug = naw.ContextualWordEmbsAug(force_reload=True, device="cuda")
 
         augmented_texts = aug.augment(text, n=n, num_thread=n)
         self.assertGreater(len(augmented_texts), 1)

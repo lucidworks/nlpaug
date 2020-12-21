@@ -17,4 +17,4 @@ class LibraryUtil:
 
         """
         lib_dir = os.path.dirname(nlpaug.__file__)
-        return os.path.join(lib_dir, 'res')
+        return os.path.join(lib_dir, "res")

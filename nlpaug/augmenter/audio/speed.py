@@ -26,10 +26,25 @@ class SpeedAug(AudioAugmenter):
     >>> aug = naa.ShiftAug()
     """
 
-    def __init__(self, zone=(0.2, 0.8), coverage=1., factor=(0.5, 2), name='Speed_Aug', verbose=0, 
-        stateless=True):
-        super().__init__(action=Action.SUBSTITUTE, name=name, zone=zone, coverage=coverage, 
-            factor=factor, device='cpu', verbose=verbose, stateless=stateless)
+    def __init__(
+        self,
+        zone=(0.2, 0.8),
+        coverage=1.0,
+        factor=(0.5, 2),
+        name="Speed_Aug",
+        verbose=0,
+        stateless=True,
+    ):
+        super().__init__(
+            action=Action.SUBSTITUTE,
+            name=name,
+            zone=zone,
+            coverage=coverage,
+            factor=factor,
+            device="cpu",
+            verbose=verbose,
+            stateless=stateless,
+        )
 
         self.model = nma.Speed()
 
@@ -45,5 +60,6 @@ class SpeedAug(AudioAugmenter):
         if not self.stateless:
             self.start_pos, self.end_pos, self.aug_factor = start_pos, end_pos, speed
 
-        return self.model.manipulate(data, start_pos=start_pos, end_pos=end_pos, speed=speed)
-        
+        return self.model.manipulate(
+            data, start_pos=start_pos, end_pos=end_pos, speed=speed
+        )

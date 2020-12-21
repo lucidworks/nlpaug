@@ -26,10 +26,28 @@ class PitchAug(AudioAugmenter):
     >>> aug = naa.PitchAug(sampling_rate=44010)
     """
 
-    def __init__(self, sampling_rate, zone=(0.2, 0.8), coverage=1., duration=None, 
-        factor=(-10, 10), name='Pitch_Aug', verbose=0, stateless=True):
-        super().__init__(action=Action.SUBSTITUTE, zone=zone, coverage=coverage, factor=factor, 
-            duration=duration, name=name, device='cpu', verbose=verbose, stateless=stateless)
+    def __init__(
+        self,
+        sampling_rate,
+        zone=(0.2, 0.8),
+        coverage=1.0,
+        duration=None,
+        factor=(-10, 10),
+        name="Pitch_Aug",
+        verbose=0,
+        stateless=True,
+    ):
+        super().__init__(
+            action=Action.SUBSTITUTE,
+            zone=zone,
+            coverage=coverage,
+            factor=factor,
+            duration=duration,
+            name=name,
+            device="cpu",
+            verbose=verbose,
+            stateless=stateless,
+        )
 
         self.sampling_rate = sampling_rate
         self.model = nma.Pitch()
@@ -39,7 +57,12 @@ class PitchAug(AudioAugmenter):
         start_pos, end_pos = self.get_augment_range_by_coverage(data)
 
         if not self.stateless:
-            self.start_pos, self.end_pos, self.aug_factor = start_pos, end_pos, pitch_level
+            self.start_pos, self.end_pos, self.aug_factor = (
+                start_pos,
+                end_pos,
+                pitch_level,
+            )
 
-        return self.model.manipulate(data, start_pos, end_pos, pitch_level, self.sampling_rate)
-
+        return self.model.manipulate(
+            data, start_pos, end_pos, pitch_level, self.sampling_rate
+        )

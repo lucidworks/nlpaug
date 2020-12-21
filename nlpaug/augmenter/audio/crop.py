@@ -24,11 +24,26 @@ class CropAug(AudioAugmenter):
     >>> aug = naa.CropAug(sampling_rate=44010)
     """
 
-    def __init__(self, sampling_rate=None, zone=(0.2, 0.8), coverage=0.1, duration=None, name='Crop_Aug', 
-        verbose=0, stateless=True):
+    def __init__(
+        self,
+        sampling_rate=None,
+        zone=(0.2, 0.8),
+        coverage=0.1,
+        duration=None,
+        name="Crop_Aug",
+        verbose=0,
+        stateless=True,
+    ):
         super().__init__(
-            action=Action.DELETE, zone=zone, coverage=coverage, duration=duration, name=name, 
-            device='cpu', verbose=verbose, stateless=stateless)
+            action=Action.DELETE,
+            zone=zone,
+            coverage=coverage,
+            duration=duration,
+            name=name,
+            device="cpu",
+            verbose=verbose,
+            stateless=stateless,
+        )
 
         self.sampling_rate = sampling_rate
         self.model = nma.Crop()
@@ -42,5 +57,5 @@ class CropAug(AudioAugmenter):
         if not self.stateless:
             self.start_pos = start_pos
             self.end_pos = end_pos
-            
+
         return self.model.manipulate(data, start_pos=start_pos, end_pos=end_pos)

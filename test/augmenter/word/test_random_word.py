@@ -5,13 +5,11 @@ import nlpaug.augmenter.word as naw
 
 class TestRandom(unittest.TestCase):
     def test_swap(self):
-        texts = [
-            'The quick brown fox jumps over the lazy dog'
-        ]
+        texts = ["The quick brown fox jumps over the lazy dog"]
         aug = naw.RandomWordAug(action="swap")
 
         for text in texts:
-            tokens = text.lower().split(' ')
+            tokens = text.lower().split(" ")
             orig_token_freq = {}
             for w in tokens:
                 orig_token_freq[w] = tokens.count(w)
@@ -22,7 +20,7 @@ class TestRandom(unittest.TestCase):
             for i in range(10):
                 augmented_text = aug.augment(augmented_text)
 
-            aug_tokens = augmented_text.lower().split(' ')
+            aug_tokens = augmented_text.lower().split(" ")
             aug_token_freq = {}
             for w in tokens:
                 aug_token_freq[w] = aug_tokens.count(w)
@@ -34,23 +32,19 @@ class TestRandom(unittest.TestCase):
             self.assertNotEqual(text, augmented_text)
 
     def test_substitute_without_target_word(self):
-        texts = [
-            'The quick brown fox jumps over the lazy dog'
-        ]
-        aug = naw.RandomWordAug(action='substitute')
+        texts = ["The quick brown fox jumps over the lazy dog"]
+        aug = naw.RandomWordAug(action="substitute")
 
         for text in texts:
             augmented_text = aug.augment(text)
 
-            self.assertIn('_', augmented_text)
+            self.assertIn("_", augmented_text)
             self.assertNotEqual(text, augmented_text)
 
     def test_substitute_with_target_word(self):
-        texts = [
-            'The quick brown fox jumps over the lazy dog'
-        ]
-        target_words = ['$', '#', '^^^']
-        aug = naw.RandomWordAug(action='substitute', target_words=target_words)
+        texts = ["The quick brown fox jumps over the lazy dog"]
+        target_words = ["$", "#", "^^^"]
+        aug = naw.RandomWordAug(action="substitute", target_words=target_words)
 
         for text in texts:
             augmented_text = aug.augment(text)
@@ -64,9 +58,7 @@ class TestRandom(unittest.TestCase):
             self.assertNotEqual(text, augmented_text)
 
     def test_delete(self):
-        texts = [
-            'The quick brown fox jumps over the lazy dog'
-        ]
+        texts = ["The quick brown fox jumps over the lazy dog"]
         aug = naw.RandomWordAug()
 
         for text in texts:
@@ -75,10 +67,8 @@ class TestRandom(unittest.TestCase):
 
     # https://github.com/makcedward/nlpaug/issues/76
     def test_swap_one_token(self):
-        texts = [
-            'The'
-        ]
-        aug = naw.RandomWordAug(action='swap')
+        texts = ["The"]
+        aug = naw.RandomWordAug(action="swap")
 
         for text in texts:
             augmented_text = aug.augment(text)
@@ -87,26 +77,20 @@ class TestRandom(unittest.TestCase):
 
     # https://github.com/makcedward/nlpaug/issues/76
     def test_delete_one_token(self):
-        texts = [
-            'The'
-        ]
-        aug = naw.RandomWordAug(action='delete')
+        texts = ["The"]
+        aug = naw.RandomWordAug(action="delete")
 
         for text in texts:
             augmented_text = aug.augment(text)
             self.assertEqual(text, augmented_text)
 
-
     def test_crop(self):
-        texts = [
-            'The quick brown fox jumps over the lazy dog'
-        ]
-        aug = naw.RandomWordAug(action='crop')
+        texts = ["The quick brown fox jumps over the lazy dog"]
+        aug = naw.RandomWordAug(action="crop")
 
         for text in texts:
-            orig_tokens = text.split(' ')
+            orig_tokens = text.split(" ")
             augmented_text = aug.augment(text)
-            aug_tokens = augmented_text.split(' ')
+            aug_tokens = augmented_text.split(" ")
 
             self.assertGreater(len(orig_tokens), len(aug_tokens))
-            

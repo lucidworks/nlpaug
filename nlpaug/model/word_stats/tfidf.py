@@ -30,9 +30,9 @@ class TfIdf(WordStatistics):
     @classmethod
     def _normalize(cls, data):
         """
-            Quoted from https://arxiv.org/pdf/1904.12848.pdf.
-            // We set a high probability for replacing words with low TF-IDF scores and
-            // set a low probability for replacing words with high TF-IDF scores
+        Quoted from https://arxiv.org/pdf/1904.12848.pdf.
+        // We set a high probability for replacing words with low TF-IDF scores and
+        // set a low probability for replacing words with high TF-IDF scores
         """
         data = data.max() - np.copy(data)
         if data.sum() == 0:
@@ -41,9 +41,9 @@ class TfIdf(WordStatistics):
 
     def cal_tfidf(self, word_idxes, tokens, normalize=True):
         """
-            Different from traditional TF-IDF calculation, original authors treat handle single token is separately.
-            Even though they are same, they will calculate TF-IDF separately. Possible reason is that they want
-            to guarantee random behavior independently.
+        Different from traditional TF-IDF calculation, original authors treat handle single token is separately.
+        Even though they are same, they will calculate TF-IDF separately. Possible reason is that they want
+        to guarantee random behavior independently.
         """
         tfidf = []
         for idx in word_idxes:
@@ -95,26 +95,34 @@ class TfIdf(WordStatistics):
         self.tfidf_scores = list(self.w2tfidf.values())
 
     def save(self, model_path):
-        with open(os.path.join(model_path, self.WORD_2_IDF_FILE_NAME), "w", encoding="utf-8") as f:
+        with open(
+            os.path.join(model_path, self.WORD_2_IDF_FILE_NAME), "w", encoding="utf-8"
+        ) as f:
             for w, s in self.w2idf.items():
-                f.write(str(w) + ' ' + str(s) + '\n')
+                f.write(str(w) + " " + str(s) + "\n")
 
-        with open(os.path.join(model_path, self.WORD_2_TFIDF_FILE_NAME), "w", encoding="utf-8") as f:
+        with open(
+            os.path.join(model_path, self.WORD_2_TFIDF_FILE_NAME), "w", encoding="utf-8"
+        ) as f:
             for w, s in self.w2tfidf.items():
-                f.write(str(w) + ' ' + str(s) + '\n')
+                f.write(str(w) + " " + str(s) + "\n")
 
     def read(self, model_path):
         self.w2idf = {}
         self.w2tfidf = {}
 
-        with open(os.path.join(model_path, self.WORD_2_IDF_FILE_NAME), 'r', encoding="utf-8") as f:
+        with open(
+            os.path.join(model_path, self.WORD_2_IDF_FILE_NAME), "r", encoding="utf-8"
+        ) as f:
             for line in f.readlines():
-                w, s = line.split(' ')
+                w, s = line.split(" ")
                 self.w2idf[w] = float(s)
 
-        with open(os.path.join(model_path, self.WORD_2_TFIDF_FILE_NAME), 'r', encoding="utf-8") as f:
+        with open(
+            os.path.join(model_path, self.WORD_2_TFIDF_FILE_NAME), "r", encoding="utf-8"
+        ) as f:
             for line in f.readlines():
-                w, s = line.split(' ')
+                w, s = line.split(" ")
                 self.w2tfidf[w] = float(s)
         self.tokens = list(self.w2tfidf.keys())
         self.tfidf_scores = list(self.w2tfidf.values())

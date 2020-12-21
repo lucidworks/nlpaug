@@ -8,14 +8,17 @@ import nlpaug.augmenter.word as naw
 class TestSpelling(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        env_config_path = os.path.abspath(os.path.join(
-            os.path.dirname(__file__), '..', '..', '..', '.env'))
+        env_config_path = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "..", "..", "..", ".env")
+        )
         load_dotenv(env_config_path)
 
-        cls.model_dir = os.path.join(os.environ.get("PACKAGE_DIR"), 'res', 'word', 'spelling')
+        cls.model_dir = os.path.join(
+            os.environ.get("PACKAGE_DIR"), "res", "word", "spelling"
+        )
 
     def test_read_default_dict(self):
-        text = 'abcdef'
+        text = "abcdef"
 
         aug = naw.SpellingAug()
         self.assertTrue(aug.model.dict_path)
@@ -23,19 +26,17 @@ class TestSpelling(unittest.TestCase):
         self.assertTrue(True)
 
     def test_oov(self):
-        text = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+        text = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 
-        aug = naw.SpellingAug(dict_path=os.path.join(self.model_dir, 'spelling_en.txt'))
+        aug = naw.SpellingAug(dict_path=os.path.join(self.model_dir, "spelling_en.txt"))
         augmented_text = aug.augment(text)
 
         self.assertEqual(text, augmented_text)
 
     def test_substitute(self):
-        texts = [
-            'The quick brown fox jumps over the lazy dog'
-        ]
+        texts = ["The quick brown fox jumps over the lazy dog"]
 
-        aug = naw.SpellingAug(dict_path=os.path.join(self.model_dir, 'spelling_en.txt'))
+        aug = naw.SpellingAug(dict_path=os.path.join(self.model_dir, "spelling_en.txt"))
 
         for text in texts:
             self.assertLess(0, len(text))
@@ -46,14 +47,15 @@ class TestSpelling(unittest.TestCase):
         self.assertLess(0, len(texts))
 
     def test_substitute_stopwords(self):
-        texts = [
-            'The quick brown fox jumps over the lazy dog'
-        ]
+        texts = ["The quick brown fox jumps over the lazy dog"]
 
-        stopwords = [t.lower() for t in texts[0].split(' ')[:3]]
+        stopwords = [t.lower() for t in texts[0].split(" ")[:3]]
         aug_n = 3
 
-        aug = naw.SpellingAug(dict_path=os.path.join(self.model_dir, 'spelling_en.txt'), stopwords=stopwords)
+        aug = naw.SpellingAug(
+            dict_path=os.path.join(self.model_dir, "spelling_en.txt"),
+            stopwords=stopwords,
+        )
 
         for text in texts:
             self.assertLess(0, len(text))

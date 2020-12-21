@@ -1,21 +1,15 @@
 class PartOfSpeech:
-    NOUN = 'noun'
-    VERB = 'verb'
-    ADJECTIVE = 'adjective'
-    ADVERB = 'adverb'
+    NOUN = "noun"
+    VERB = "verb"
+    ADJECTIVE = "adjective"
+    ADVERB = "adverb"
 
     pos2con = {
-        'n': [
-            'NN', 'NNS', 'NNP', 'NNPS',  # from WordNet
-            'NP'  # from PPDB
-        ],
-        'v': [
-            'VB', 'VBD', 'VBG', 'VBN', 'VBZ',  # from WordNet
-            'VBP'  # from PPDB
-        ],
-        'a': ['JJ', 'JJR', 'JJS', 'IN'],
-        's': ['JJ', 'JJR', 'JJS', 'IN'],  # Adjective Satellite
-        'r': ['RB', 'RBR', 'RBS'],  # Adverb
+        "n": ["NN", "NNS", "NNP", "NNPS", "NP"],  # from WordNet  # from PPDB
+        "v": ["VB", "VBD", "VBG", "VBN", "VBZ", "VBP"],  # from WordNet  # from PPDB
+        "a": ["JJ", "JJR", "JJS", "IN"],
+        "s": ["JJ", "JJR", "JJS", "IN"],  # Adjective Satellite
+        "r": ["RB", "RBR", "RBS"],  # Adverb
     }
 
     con2pos = {}

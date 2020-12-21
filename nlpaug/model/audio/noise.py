@@ -6,11 +6,25 @@ from nlpaug.model.audio import Audio
 
 
 class Noise(Audio):
-    COLOR_NOISES = ['white', 'pink', 'red', 'brown', 'brownian', 'blue', 'azure', 'violet', 'purple']
+    COLOR_NOISES = [
+        "white",
+        "pink",
+        "red",
+        "brown",
+        "brownian",
+        "blue",
+        "azure",
+        "violet",
+        "purple",
+    ]
 
     def validate(self, color):
-        if color not in self.COLOR_NOISES + ['random']:
-            raise ValueError('Only support {} while `{}` is passed'.format(self.COLOR_NOISES+['random'], self.color))
+        if color not in self.COLOR_NOISES + ["random"]:
+            raise ValueError(
+                "Only support {} while `{}` is passed".format(
+                    self.COLOR_NOISES + ["random"], self.color
+                )
+            )
 
     def get_noise_and_color(self, aug_segment_size, noises, color):
         if noises is None:
@@ -27,21 +41,21 @@ class Noise(Audio):
         noise_fft = np.random.randn(fft_size)
         color_noise = np.linspace(1, fft_size, fft_size)
 
-        if color == 'random':
+        if color == "random":
             _color = np.random.choice(self.COLOR_NOISES)
         else:
             _color = color
 
-        if _color == 'white':
+        if _color == "white":
             pass  # no color noise
         else:
-            if _color == 'pink':
+            if _color == "pink":
                 color_noise = color_noise ** (-1)  # 1/f
-            elif _color in ['red', 'brown', 'brownian']:
+            elif _color in ["red", "brown", "brownian"]:
                 color_noise = color_noise ** (-2)  # 1/f^2
-            elif _color in ['blue', 'azure']:
+            elif _color in ["blue", "azure"]:
                 pass  # f
-            elif _color in ['violet', 'purple']:
+            elif _color in ["violet", "purple"]:
                 color_noise = color_noise ** 2  # f^2
 
             noise_fft = noise_fft * color_noise
@@ -61,7 +75,7 @@ class Noise(Audio):
             noise_segment = noise[:segment_size]
         else:
             noise_segment = noise.copy()
-            for _ in range(math.ceil(segment_size/len(noise))-1):
+            for _ in range(math.ceil(segment_size / len(noise)) - 1):
                 noise_segment = np.append(noise_segment, noise)
             noise_segment = noise_segment[:segment_size]
 
@@ -80,4 +94,7 @@ class Noise(Audio):
     def manipulate(self, data, start_pos, end_pos, noise):
         noise = self.pad(data[start_pos:end_pos], noise)
 
-        return np.concatenate((data[:start_pos], (data[start_pos:end_pos]+noise), data[end_pos:]), axis=0).astype(type(data[0]))
+        return np.concatenate(
+            (data[:start_pos], (data[start_pos:end_pos] + noise), data[end_pos:]),
+            axis=0,
+        ).astype(type(data[0]))

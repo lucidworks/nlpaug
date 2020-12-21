@@ -8,7 +8,7 @@ import nlpaug.augmenter.char as nac
 
 class TestKeyboard(unittest.TestCase):
     def test_single_word(self):
-        texts = ['Zoology', 'roku123456']
+        texts = ["Zoology", "roku123456"]
         aug = nac.KeyboardAug()
         for text in texts:
             augmented_text = aug.augment(text)
@@ -17,7 +17,7 @@ class TestKeyboard(unittest.TestCase):
         self.assertTrue(len(texts) > 0)
 
     def test_multi_words(self):
-        texts = ['The quick brown fox jumps over the lazy dog']
+        texts = ["The quick brown fox jumps over the lazy dog"]
         aug = nac.KeyboardAug()
         for text in texts:
             augmented_text = aug.augment(text)
@@ -26,48 +26,48 @@ class TestKeyboard(unittest.TestCase):
         self.assertTrue(len(texts) > 0)
 
     def test_no_special_character(self):
-        text = 'qwertyuioplmnbvcxza'
+        text = "qwertyuioplmnbvcxza"
         for i in range(10):
             aug = nac.KeyboardAug(include_special_char=False)
             augmented_text = aug.augment(text)
             self.assertTrue(re.match("^[a-zA-Z0-9]*$", augmented_text))
 
     def test_lang_th(self):
-        text = 'ฤฤฤฤ ฤฏณ'
-        aug = nac.KeyboardAug(lang='th')
+        text = "ฤฤฤฤ ฤฏณ"
+        aug = nac.KeyboardAug(lang="th")
         augmented_text = aug.augment(text)
         self.assertNotEqual(text, augmented_text)
 
     def test_non_support_lang(self):
         try:
-            nac.KeyboardAug(lang='non_exist')
+            nac.KeyboardAug(lang="non_exist")
             self.assertTrue(False)
         except ValueError:
             self.assertTrue(True)
 
     def test_custom_model(self):
         custom_model = {
-            'a': '1',
-            'b': '2',
+            "a": "1",
+            "b": "2",
         }
 
-        custom_model_file_path = 'char_keyboard_custom_model.json'
+        custom_model_file_path = "char_keyboard_custom_model.json"
 
-        with open(custom_model_file_path, 'w') as outfile:
+        with open(custom_model_file_path, "w") as outfile:
             json.dump(custom_model, outfile)
 
-        text = 'ababab'
+        text = "ababab"
         aug = nac.KeyboardAug(model_path=custom_model_file_path)
         augmented_text = aug.augment(text)
 
-        self.assertTrue('1' in augmented_text or '2' in augmented_text)
+        self.assertTrue("1" in augmented_text or "2" in augmented_text)
 
         if os.path.exists(custom_model_file_path):
             os.remove(custom_model_file_path)
 
     def test_load_custom_model_fail(self):
         try:
-            aug = nac.KeyboardAug(model_path='test_load_custom_model_fail.json')
+            aug = nac.KeyboardAug(model_path="test_load_custom_model_fail.json")
             self.assertTrue(False)
         except ValueError:
             self.assertTrue(True)

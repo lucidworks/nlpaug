@@ -5,7 +5,15 @@
 import os
 
 from nlpaug.augmenter.word import WordAugmenter
-from nlpaug.util import Action, Doc, PartOfSpeech, WarningException, WarningName, WarningCode, WarningMessage
+from nlpaug.util import (
+    Action,
+    Doc,
+    PartOfSpeech,
+    WarningException,
+    WarningName,
+    WarningCode,
+    WarningMessage,
+)
 import nlpaug.model.word_dict as nmw
 
 PPDB_MODEL = {}
@@ -50,13 +58,36 @@ class SynonymAug(WordAugmenter):
     >>> aug = naw.SynonymAug()
     """
 
-    def __init__(self, aug_src='wordnet', model_path=None, name='Synonym_Aug', aug_min=1, aug_max=10, aug_p=0.3,
-                 lang='eng', stopwords=None, tokenizer=None, reverse_tokenizer=None, stopwords_regex=None,
-                 force_reload=False, verbose=0):
+    def __init__(
+        self,
+        aug_src="wordnet",
+        model_path=None,
+        name="Synonym_Aug",
+        aug_min=1,
+        aug_max=10,
+        aug_p=0.3,
+        lang="eng",
+        stopwords=None,
+        tokenizer=None,
+        reverse_tokenizer=None,
+        stopwords_regex=None,
+        force_reload=False,
+        verbose=0,
+    ):
         super().__init__(
-            action=Action.SUBSTITUTE, name=name, aug_p=aug_p, aug_min=aug_min, aug_max=aug_max, stopwords=stopwords,
-            tokenizer=tokenizer, reverse_tokenizer=reverse_tokenizer, device='cpu', verbose=verbose,
-            stopwords_regex=stopwords_regex, include_detail=False)
+            action=Action.SUBSTITUTE,
+            name=name,
+            aug_p=aug_p,
+            aug_min=aug_min,
+            aug_max=aug_max,
+            stopwords=stopwords,
+            tokenizer=tokenizer,
+            reverse_tokenizer=reverse_tokenizer,
+            device="cpu",
+            verbose=verbose,
+            stopwords_regex=stopwords_regex,
+            include_detail=False,
+        )
 
         self.aug_src = aug_src
         self.model_path = model_path
@@ -69,15 +100,15 @@ class SynonymAug(WordAugmenter):
             to_be_keep = True
 
             # Some word does not come with synonym/ antony. It will be excluded in lucky draw.
-            if tokens[token_idx][1] in ['DT']:
+            if tokens[token_idx][1] in ["DT"]:
                 continue
 
             # Some words does not exisit for specific pos. Need to filter it out
-            if self.aug_src == 'ppdb':
+            if self.aug_src == "ppdb":
                 word_poses = PartOfSpeech.constituent2pos(tokens[token_idx][1])
                 if word_poses is None or len(word_poses) == 0:
                     continue
-                
+
                 have_candidate = False
                 for word_pos in word_poses:
                     if len(self.model.predict(tokens[token_idx][0], pos=word_pos)) > 0:
@@ -98,8 +129,11 @@ class SynonymAug(WordAugmenter):
         word_idxes = self.skip_aug(word_idxes, tokens)
         if len(word_idxes) == 0:
             if self.verbose > 0:
-                exception = WarningException(name=WarningName.OUT_OF_VOCABULARY,
-                                             code=WarningCode.WARNING_CODE_002, msg=WarningMessage.NO_WORD)
+                exception = WarningException(
+                    name=WarningName.OUT_OF_VOCABULARY,
+                    code=WarningCode.WARNING_CODE_002,
+                    msg=WarningMessage.NO_WORD,
+                )
                 exception.output()
             return None
         if len(word_idxes) < aug_cnt:
@@ -110,7 +144,7 @@ class SynonymAug(WordAugmenter):
     def substitute(self, data):
         if not data or not data.strip():
             return data
-            
+
         change_seq = 0
         doc = Doc(data, self.tokenizer(data))
 
@@ -144,25 +178,40 @@ class SynonymAug(WordAugmenter):
                 substitute_token = self.align_capitalization(original_token, candidate)
 
                 if aug_idx == 0:
-                    substitute_token = self.align_capitalization(original_token, substitute_token)
+                    substitute_token = self.align_capitalization(
+                        original_token, substitute_token
+                    )
 
                 change_seq += 1
-                doc.add_change_log(aug_idx, new_token=substitute_token, action=Action.SUBSTITUTE,
-                                   change_seq=self.parent_change_seq + change_seq)
+                doc.add_change_log(
+                    aug_idx,
+                    new_token=substitute_token,
+                    action=Action.SUBSTITUTE,
+                    change_seq=self.parent_change_seq + change_seq,
+                )
 
         if self.include_detail:
-            return self.reverse_tokenizer(doc.get_augmented_tokens()), doc.get_change_logs()
+            return (
+                self.reverse_tokenizer(doc.get_augmented_tokens()),
+                doc.get_change_logs(),
+            )
         else:
             return self.reverse_tokenizer(doc.get_augmented_tokens())
 
     @classmethod
     def get_model(cls, aug_src, lang, dict_path, force_reload):
-        if aug_src == 'wordnet':
+        if aug_src == "wordnet":
             return nmw.WordNet(lang=lang, is_synonym=True)
-        elif aug_src == 'ppdb':
+        elif aug_src == "ppdb":
             return init_ppdb_model(dict_path=dict_path, force_reload=force_reload)
 
-        raise ValueError('aug_src is not one of `wordnet` or `ppdb` while {} is passed.'.format(aug_src))
+        raise ValueError(
+            "aug_src is not one of `wordnet` or `ppdb` while {} is passed.".format(
+                aug_src
+            )
+        )
 
     def __str__(self):
-        return 'Name:{}, Aug Src:{}, Action:{}, Method:{}'.format(self.name, self.aug_src, self.action, self.method)
+        return "Name:{}, Aug Src:{}, Action:{}, Method:{}".format(
+            self.name, self.aug_src, self.action, self.method
+        )

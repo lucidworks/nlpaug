@@ -18,10 +18,24 @@ class ShiftAug(AudioAugmenter):
     >>> aug = naa.ShiftAug(sampling_rate=44010)
     """
 
-    def __init__(self, sampling_rate, duration=3, direction='random', shift_direction='random', 
-        name='Shift_Aug', verbose=0, stateless=True):
-        super().__init__(action=Action.SUBSTITUTE, name=name, duration=duration, device='cpu', verbose=verbose, 
-            stateless=stateless)
+    def __init__(
+        self,
+        sampling_rate,
+        duration=3,
+        direction="random",
+        shift_direction="random",
+        name="Shift_Aug",
+        verbose=0,
+        stateless=True,
+    ):
+        super().__init__(
+            action=Action.SUBSTITUTE,
+            name=name,
+            duration=duration,
+            device="cpu",
+            verbose=verbose,
+            stateless=stateless,
+        )
 
         self.sampling_rate = sampling_rate
         self.direction = direction
@@ -32,10 +46,10 @@ class ShiftAug(AudioAugmenter):
 
     def _get_aug_shift(self):
         aug_shift = int(self.sampling_rate * self.duration)
-        if self.direction == 'right':
+        if self.direction == "right":
             return -aug_shift
-        elif self.direction == 'random':
-            direction = self.sample(3)-1
+        elif self.direction == "random":
+            direction = self.sample(3) - 1
             if direction == 1:
                 return -aug_shift
 

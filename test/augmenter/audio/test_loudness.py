@@ -10,12 +10,16 @@ from nlpaug.util import AudioLoader
 class TestLoudness(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        env_config_path = os.path.abspath(os.path.join(
-            os.path.dirname(__file__), '..', '..', '..', '.env'))
+        env_config_path = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "..", "..", "..", ".env")
+        )
         load_dotenv(env_config_path)
         # https://freewavesamples.com/yamaha-v50-rock-beat-120-bpm
         cls.sample_wav_file = os.path.join(
-            os.environ.get("TEST_DIR"), 'res', 'audio', 'Yamaha-V50-Rock-Beat-120bpm.wav'
+            os.environ.get("TEST_DIR"),
+            "res",
+            "audio",
+            "Yamaha-V50-Rock-Beat-120bpm.wav",
         )
         cls.audio, cls.sampling_rate = AudioLoader.load_audio(cls.sample_wav_file)
 
