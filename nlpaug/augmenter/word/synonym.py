@@ -3,6 +3,7 @@
 """
 
 import os
+from typing import List
 
 from nlpaug.augmenter.word import WordAugmenter
 from nlpaug.util import (
@@ -94,7 +95,7 @@ class SynonymAug(WordAugmenter):
         self.lang = lang
         self.model = self.get_model(aug_src, lang, model_path, force_reload)
 
-    def skip_aug(self, token_idxes, tokens):
+    def skip_aug(self, token_idxes: List[int], tokens: List[str]):
         results = []
         for token_idx in token_idxes:
             to_be_keep = True
@@ -123,9 +124,9 @@ class SynonymAug(WordAugmenter):
 
         return results
 
-    def _get_aug_idxes(self, tokens):
+    def _get_aug_idxes(self, tokens, tuple_idx=0):
         aug_cnt = self.generate_aug_cnt(len(tokens))
-        word_idxes = self.pre_skip_aug(tokens, tuple_idx=0)
+        word_idxes = self.pre_skip_aug(tokens, tuple_idx=tuple_idx)
         word_idxes = self.skip_aug(word_idxes, tokens)
         if len(word_idxes) == 0:
             if self.verbose > 0:
