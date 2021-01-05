@@ -38,9 +38,7 @@ class TestFiltering(unittest.TestCase):
         np.testing.assert_equal(idxes, np.array([4, 5]))
         # Filter negative number
         modified_data, idxes = filtering.filter_proba(data, -5, replace=-99)
-        np.testing.assert_equal(
-            modified_data, np.array([-99, -0.1, 0.0, 0.0, 1.5, 3.4])
-        )
+        np.testing.assert_equal(modified_data, np.array([-99, -0.1, 0.0, 0.0, 1.5, 3.4]))
         np.testing.assert_equal(idxes, np.array([1, 2, 3, 4, 5]))
 
     def test_probability_smaller(self):
@@ -63,20 +61,14 @@ class TestFiltering(unittest.TestCase):
         # ============== With replace value
         # Filter positive number
         modified_data, idxes = filtering.filter_proba(data, 2, above=False, replace=-99)
-        np.testing.assert_equal(
-            modified_data[modified_data > -99], np.array([-10, -0.1, 0.0, 0.0, 1.5])
-        )
+        np.testing.assert_equal(modified_data[modified_data > -99], np.array([-10, -0.1, 0.0, 0.0, 1.5]))
         np.testing.assert_equal(idxes, np.array([0, 1, 2, 3, 4]))
         # # Filter zero
         modified_data, idxes = filtering.filter_proba(data, 0, above=False, replace=-99)
-        np.testing.assert_equal(
-            modified_data, np.array([-10, -0.1, -99, -99, -99, -99])
-        )
+        np.testing.assert_equal(modified_data, np.array([-10, -0.1, -99, -99, -99, -99]))
         np.testing.assert_equal(idxes, np.array([0, 1]))
         # Filter negative number
-        modified_data, idxes = filtering.filter_proba(
-            data, -5, above=False, replace=-99
-        )
+        modified_data, idxes = filtering.filter_proba(data, -5, above=False, replace=-99)
         np.testing.assert_equal(modified_data, np.array([-10, -99, -99, -99, -99, -99]))
         np.testing.assert_equal(idxes, np.array([0]))
 
@@ -166,9 +158,7 @@ class TestFiltering(unittest.TestCase):
         modified_data, idxes = filtering.filter_top_k(data, 2, replace=-99)
         modified_data = modified_data.data.numpy()
         idxes = idxes.data.numpy()
-        np.testing.assert_equal(
-            modified_data, np.array([-99, -99, -99, -99, 3.4, 1.5], dtype=np.float32)
-        )
+        np.testing.assert_equal(modified_data, np.array([-99, -99, -99, -99, 3.4, 1.5], dtype=np.float32))
         np.testing.assert_equal(idxes, np.array([4, 5]))
 
     def test_cum_proba(self):
@@ -182,14 +172,10 @@ class TestFiltering(unittest.TestCase):
         np.testing.assert_equal(modified_data, expected_data)
         np.testing.assert_equal(idxes, np.array([0, 3]))
 
-        modified_data, idxes = filtering.nucleus_sampling(
-            data, 0.95, above=False, replace=None
-        )
+        modified_data, idxes = filtering.nucleus_sampling(data, 0.95, above=False, replace=None)
         modified_data = modified_data.data.numpy()
         idxes = idxes.data.numpy()
-        expected_data = np.array(
-            [-11.5886, -13.3220, -18.5356, -18.8203], dtype=np.float32
-        )
+        expected_data = np.array([-11.5886, -13.3220, -18.5356, -18.8203], dtype=np.float32)
         np.testing.assert_equal(modified_data, expected_data)
         np.testing.assert_equal(idxes, np.array([5, 4, 1, 2]))
 
@@ -197,17 +183,13 @@ class TestFiltering(unittest.TestCase):
         modified_data, idxes = filtering.nucleus_sampling(data, 0.95)
         modified_data = modified_data.data.numpy()
         idxes = idxes.data.numpy()
-        expected_data = np.array(
-            [-9.2171, -10.8368, 0.0000, 0.0000, 0.0000, 0.0000], dtype=np.float32
-        )
+        expected_data = np.array([-9.2171, -10.8368, 0.0000, 0.0000, 0.0000, 0.0000], dtype=np.float32)
         np.testing.assert_equal(modified_data, expected_data)
         np.testing.assert_equal(idxes, np.array([0, 3]))
 
         modified_data, idxes = filtering.nucleus_sampling(data, 0.95, above=False)
         modified_data = modified_data.data.numpy()
         idxes = idxes.data.numpy()
-        expected_data = np.array(
-            [0.0000, 0.0000, -11.5886, -13.3220, -18.5356, -18.8203], dtype=np.float32
-        )
+        expected_data = np.array([0.0000, 0.0000, -11.5886, -13.3220, -18.5356, -18.8203], dtype=np.float32)
         np.testing.assert_equal(modified_data, expected_data)
         np.testing.assert_equal(idxes, np.array([5, 4, 1, 2]))

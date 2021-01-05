@@ -35,20 +35,17 @@ class SpectrogramAugmenter(Augmenter):
 
         if self.zone[0] < 0:
             raise ValueError(
-                "Lower bound of zone is smaller than {}.".format(0)
-                + " It should be larger than {}".format(0)
+                "Lower bound of zone is smaller than {}.".format(0) + " It should be larger than {}".format(0)
             )
 
         if self.zone[1] > 1:
             raise ValueError(
-                "Upper bound of zone is larger than {}.".format(1)
-                + " It should be smaller than {}".format(1)
+                "Upper bound of zone is larger than {}.".format(1) + " It should be smaller than {}".format(1)
             )
 
         if self.coverage < 0 or self.coverage > 1:
             raise ValueError(
-                "Coverage value should be between than 0 and 1 while "
-                + "input value is {}".format(self.coverage)
+                "Coverage value should be between than 0 and 1 while " + "input value is {}".format(self.coverage)
             )
 
     @classmethod
@@ -73,9 +70,7 @@ class SpectrogramAugmenter(Augmenter):
             return np.random.uniform(lower_bound, upper_bound)
 
     def get_augment_range_by_coverage(self, data):
-        zone_start, zone_end = int(len(data) * self.zone[0]), int(
-            len(data) * self.zone[1]
-        )
+        zone_start, zone_end = int(len(data) * self.zone[0]), int(len(data) * self.zone[1])
         zone_size = zone_end - zone_start
 
         target_size = int(zone_size * self.coverage)

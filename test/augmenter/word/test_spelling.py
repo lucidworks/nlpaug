@@ -8,14 +8,10 @@ import nlpaug.augmenter.word as naw
 class TestSpelling(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        env_config_path = os.path.abspath(
-            os.path.join(os.path.dirname(__file__), "..", "..", "..", ".env")
-        )
+        env_config_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", ".env"))
         load_dotenv(env_config_path)
 
-        cls.model_dir = os.path.join(
-            os.environ.get("PACKAGE_DIR"), "res", "word", "spelling"
-        )
+        cls.model_dir = os.path.join(os.environ.get("PACKAGE_DIR"), "res", "word", "spelling")
 
     def test_read_default_dict(self):
         text = "abcdef"

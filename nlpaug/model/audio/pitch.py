@@ -16,9 +16,7 @@ class Pitch(Audio):
         try:
             import librosa
         except ModuleNotFoundError:
-            raise ModuleNotFoundError(
-                "Missed librosa library. Install it via `pip install librosa`"
-            )
+            raise ModuleNotFoundError("Missed librosa library. Install it via `pip install librosa`")
 
     def manipulate(self, data, start_pos, end_pos, pitch_level, sampling_rate):
         aug_data = data.copy()

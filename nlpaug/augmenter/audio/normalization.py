@@ -38,9 +38,7 @@ class NormalizeAug(AudioAugmenter):
     def validate(self):
         if self.method not in self.model.get_support_methods():
             raise ValueError(
-                "{} does not support yet. You may pick one of {}".format(
-                    self.method, self.model.get_support_methods()
-                )
+                "{} does not support yet. You may pick one of {}".format(self.method, self.model.get_support_methods())
             )
 
         return True

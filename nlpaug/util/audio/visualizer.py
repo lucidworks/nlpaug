@@ -23,20 +23,14 @@ class AudioVisualizer:
         audio_fft = np.fft.rfft(audio)
         audio_fft /= len(audio_fft)
 
-        freq_bins = np.arange(0, len(audio_fft), 1.0) * (
-            sample_rate * 1.0 / len(audio_fft)
-        )
-        plt.plot(
-            freq_bins / 1000, 10 * np.log10(audio_fft), color="#FF0000", linewidth=0.02
-        )
+        freq_bins = np.arange(0, len(audio_fft), 1.0) * (sample_rate * 1.0 / len(audio_fft))
+        plt.plot(freq_bins / 1000, 10 * np.log10(audio_fft), color="#FF0000", linewidth=0.02)
 
         if aug_audio is not None:
             aug_audio_fft = np.fft.rfft(aug_audio)
             aug_audio_fft /= len(aug_audio_fft)
 
-            aug_freq_bins = np.arange(0, len(aug_audio_fft), 1.0) * (
-                sample_rate * 1.0 / len(aug_audio_fft)
-            )
+            aug_freq_bins = np.arange(0, len(aug_audio_fft), 1.0) * (sample_rate * 1.0 / len(aug_audio_fft))
             plt.plot(
                 aug_freq_bins / 1000,
                 10 * np.log10(aug_audio_fft),

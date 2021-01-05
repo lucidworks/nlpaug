@@ -29,15 +29,11 @@ class Roberta(LanguageModels):
         device="cuda",
         silence=True,
     ):
-        super().__init__(
-            device, temperature=temperature, top_k=top_k, top_p=top_p, silence=True
-        )
+        super().__init__(device, temperature=temperature, top_k=top_k, top_p=top_p, silence=True)
         try:
             from transformers import AutoModelForMaskedLM, AutoTokenizer
         except ModuleNotFoundError:
-            raise ModuleNotFoundError(
-                "Missed transformers library. Install transfomers by `pip install transformers`"
-            )
+            raise ModuleNotFoundError("Missed transformers library. Install transfomers by `pip install transformers`")
 
         self.model_path = model_path
 
@@ -46,16 +42,10 @@ class Roberta(LanguageModels):
         self.pad_id = self.token2id(self.PAD_TOKEN)
         if silence:
             # Transformers thrown an warning regrading to weight initialization. It is expected
-            orig_log_level = logging.getLogger(
-                "transformers." + "modeling_utils"
-            ).getEffectiveLevel()
-            logging.getLogger("transformers." + "modeling_utils").setLevel(
-                logging.ERROR
-            )
+            orig_log_level = logging.getLogger("transformers." + "modeling_utils").getEffectiveLevel()
+            logging.getLogger("transformers." + "modeling_utils").setLevel(logging.ERROR)
             self.model = AutoModelForMaskedLM.from_pretrained(model_path)
-            logging.getLogger("transformers." + "modeling_utils").setLevel(
-                orig_log_level
-            )
+            logging.getLogger("transformers." + "modeling_utils").setLevel(orig_log_level)
         else:
             self.model = AutoModelForMaskedLM.from_pretrained(model_path)
 
@@ -93,9 +83,7 @@ class Roberta(LanguageModels):
         for tokens in token_inputs:
             target_poses.append(tokens.index(self.mask_id))
         segment_inputs = [[0] * len(tokens) for tokens in token_inputs]
-        mask_inputs = [
-            [1] * len(tokens) for tokens in token_inputs
-        ]  # 1: real token, 0: padding token
+        mask_inputs = [[1] * len(tokens) for tokens in token_inputs]  # 1: real token, 0: padding token
 
         # Convert to feature
         token_inputs = torch.tensor(token_inputs).to(self.device)
@@ -112,9 +100,7 @@ class Roberta(LanguageModels):
             )
 
         # Selection
-        for output, target_pos, target_token in zip(
-            outputs[0], target_poses, target_words
-        ):
+        for output, target_pos, target_token in zip(outputs[0], target_poses, target_words):
             target_token_logits = output[target_pos]
 
             seed = {
@@ -123,9 +109,7 @@ class Roberta(LanguageModels):
                 "top_p": self.top_p,
             }
             target_token_logits = self.control_randomness(target_token_logits, seed)
-            target_token_logits, target_token_idxes = self.filtering(
-                target_token_logits, seed
-            )
+            target_token_logits, target_token_idxes = self.filtering(target_token_logits, seed)
             if len(target_token_idxes) != 0:
                 new_tokens = self.pick(
                     target_token_logits,

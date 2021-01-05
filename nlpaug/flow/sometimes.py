@@ -20,9 +20,7 @@ class Sometimes(Pipeline):
     """
 
     # TODO: deprecated pipeline_p, use aug_p
-    def __init__(
-        self, flow=None, name="Sometimes_Pipeline", pipeline_p=0.2, aug_p=1, verbose=0
-    ):
+    def __init__(self, flow=None, name="Sometimes_Pipeline", pipeline_p=0.2, aug_p=1, verbose=0):
         Pipeline.__init__(
             self,
             name=name,

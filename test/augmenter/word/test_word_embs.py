@@ -8,9 +8,7 @@ import nlpaug.augmenter.word as naw
 class TestWordEmbsAug(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        env_config_path = os.path.abspath(
-            os.path.join(os.path.dirname(__file__), "..", "..", "..", ".env")
-        )
+        env_config_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", ".env"))
         load_dotenv(env_config_path)
 
         model_dir = os.environ.get("MODEL_DIR")
@@ -19,35 +17,25 @@ class TestWordEmbsAug(unittest.TestCase):
 
         cls.text = "The quick brown fox jumps over the lazy dog."
 
-        cls.word2vec_model_path = os.path.join(
-            model_dir, "word", "word_embs", "GoogleNews-vectors-negative300.bin"
-        )
+        cls.word2vec_model_path = os.path.join(model_dir, "word", "word_embs", "GoogleNews-vectors-negative300.bin")
 
         cls.augs = [
             naw.WordEmbsAug(model_type="word2vec", model_path=cls.word2vec_model_path),
             naw.WordEmbsAug(
                 model_type="glove",
-                model_path=os.path.join(
-                    model_dir, "word", "word_embs", "glove.6B.50d.txt"
-                ),
+                model_path=os.path.join(model_dir, "word", "word_embs", "glove.6B.50d.txt"),
             ),
             naw.WordEmbsAug(
                 model_type="fasttext",
-                model_path=os.path.join(
-                    model_dir, "word", "word_embs", "wiki-news-300d-1M.vec"
-                ),
+                model_path=os.path.join(model_dir, "word", "word_embs", "wiki-news-300d-1M.vec"),
             ),
         ]
 
         if full_test_case:
             cls.augs.extend(
                 [
-                    naw.WordEmbsAug(
-                        model_type="glove", model_path=model_dir + "glove.42B.300d.txt"
-                    ),
-                    naw.WordEmbsAug(
-                        model_type="glove", model_path=model_dir + "glove.840B.300d.txt"
-                    ),
+                    naw.WordEmbsAug(model_type="glove", model_path=model_dir + "glove.42B.300d.txt"),
+                    naw.WordEmbsAug(model_type="glove", model_path=model_dir + "glove.840B.300d.txt"),
                     naw.WordEmbsAug(
                         model_type="glove",
                         model_path=model_dir + "glove.twitter.27B.25d.txt",
@@ -114,16 +102,12 @@ class TestWordEmbsAug(unittest.TestCase):
 
     def test_incorrect_model_type(self):
         with self.assertRaises(ValueError) as error:
-            naw.WordEmbsAug(
-                model_type="test_model_type", model_path=self.word2vec_model_path
-            )
+            naw.WordEmbsAug(model_type="test_model_type", model_path=self.word2vec_model_path)
 
         self.assertTrue("Model type value is unexpected." in str(error.exception))
 
     def test_reset_top_k(self):
-        original_aug = naw.WordEmbsAug(
-            model_type="word2vec", model_path=self.word2vec_model_path
-        )
+        original_aug = naw.WordEmbsAug(model_type="word2vec", model_path=self.word2vec_model_path)
         original_top_k = original_aug.model.top_k
 
         new_aug = naw.WordEmbsAug(
@@ -139,9 +123,7 @@ class TestWordEmbsAug(unittest.TestCase):
         retry_cnt = 10
 
         text = "Good"
-        aug = naw.WordEmbsAug(
-            model_type="word2vec", model_path=self.word2vec_model_path, top_k=2
-        )
+        aug = naw.WordEmbsAug(model_type="word2vec", model_path=self.word2vec_model_path, top_k=2)
 
         for _ in range(retry_cnt):
             augmented_text = aug.augment(text)

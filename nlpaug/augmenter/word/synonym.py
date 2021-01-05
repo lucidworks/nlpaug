@@ -179,9 +179,7 @@ class SynonymAug(WordAugmenter):
                 substitute_token = self.align_capitalization(original_token, candidate)
 
                 if aug_idx == 0:
-                    substitute_token = self.align_capitalization(
-                        original_token, substitute_token
-                    )
+                    substitute_token = self.align_capitalization(original_token, substitute_token)
 
                 change_seq += 1
                 doc.add_change_log(
@@ -206,13 +204,7 @@ class SynonymAug(WordAugmenter):
         elif aug_src == "ppdb":
             return init_ppdb_model(dict_path=dict_path, force_reload=force_reload)
 
-        raise ValueError(
-            "aug_src is not one of `wordnet` or `ppdb` while {} is passed.".format(
-                aug_src
-            )
-        )
+        raise ValueError("aug_src is not one of `wordnet` or `ppdb` while {} is passed.".format(aug_src))
 
     def __str__(self):
-        return "Name:{}, Aug Src:{}, Action:{}, Method:{}".format(
-            self.name, self.aug_src, self.action, self.method
-        )
+        return "Name:{}, Aug Src:{}, Action:{}, Method:{}".format(self.name, self.aug_src, self.action, self.method)

@@ -31,16 +31,10 @@ class Pipeline(Augmenter, list):
         elif isinstance(flow, list):
             for subflow in flow:
                 if not isinstance(subflow, Augmenter):
-                    raise ValueError(
-                        "At least one of the flow does not belongs to Augmenter"
-                    )
+                    raise ValueError("At least one of the flow does not belongs to Augmenter")
             list.__init__(self, flow)
         else:
-            raise Exception(
-                "Expected None, Augmenter or list of Augmenter while {} is passed".format(
-                    type(flow)
-                )
-            )
+            raise Exception("Expected None, Augmenter or list of Augmenter while {} is passed".format(type(flow)))
 
     def draw(self):
         raise NotImplementedError
@@ -68,9 +62,7 @@ class Pipeline(Augmenter, list):
         >>> augmented_data = flow.augment(data)
         """
 
-        max_retry_times = (
-            3  # max loop times of n to generate expected number of outputs
-        )
+        max_retry_times = 3  # max loop times of n to generate expected number of outputs
         results = []
         is_duplicate_fx = self.get_is_duplicate_fx()
 
@@ -80,24 +72,16 @@ class Pipeline(Augmenter, list):
                 augmented_results = [self._augment(data) for _ in range(n)]
             else:
                 if self.device == "cpu":
-                    augmented_results = self._parallel_augment(
-                        self._augment, data, n=n, num_thread=num_thread
-                    )
+                    augmented_results = self._parallel_augment(self._augment, data, n=n, num_thread=num_thread)
                 elif self.device == "cuda":
                     # TODO: support multiprocessing for GPU
                     # https://discuss.pytorch.org/t/using-cuda-multiprocessing-with-single-gpu/7300
                     augmented_results = [self._augment(data) for _ in range(n)]
                 else:
-                    raise ValueError(
-                        "Unsupported device mode [{}]. Only support `cpu` or `cuda`".format(
-                            self.device
-                        )
-                    )
+                    raise ValueError("Unsupported device mode [{}]. Only support `cpu` or `cuda`".format(self.device))
 
             for augmented_result in augmented_results:
-                if is_duplicate_fx is not None and not is_duplicate_fx(
-                    results + [data], augmented_result
-                ):
+                if is_duplicate_fx is not None and not is_duplicate_fx(results + [data], augmented_result):
                     results.append(augmented_result)
 
                 if len(results) >= n:

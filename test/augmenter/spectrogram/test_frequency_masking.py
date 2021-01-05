@@ -10,9 +10,7 @@ import nlpaug.augmenter.spectrogram as nas
 class TestFrequencyMasking(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        env_config_path = os.path.abspath(
-            os.path.join(os.path.dirname(__file__), "..", "..", "..", ".env")
-        )
+        env_config_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", ".env"))
         load_dotenv(env_config_path)
         # https://freewavesamples.com/yamaha-v50-rock-beat-120-bpm
         cls.sample_wav_file = os.path.join(
@@ -44,8 +42,6 @@ class TestFrequencyMasking(unittest.TestCase):
         aug_data = aug.augment(data)
 
         self.assertEqual(len(data[aug.f0]), np.count_nonzero(data[aug.f0]))
-        self.assertEqual(
-            0, np.count_nonzero(aug_data[aug.f0][aug.time_start : aug.time_end])
-        )
+        self.assertEqual(0, np.count_nonzero(aug_data[aug.f0][aug.time_start : aug.time_end]))
         self.assertEqual(0, len(np.where(aug_data[aug.f0][: aug.time_start] == 0)[0]))
         self.assertEqual(0, len(np.where(aug_data[aug.f0][aug.time_end :] == 0)[0]))

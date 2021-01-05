@@ -118,16 +118,12 @@ class TestCharacter(unittest.TestCase):
             for i in range(10):
                 augmented_text = aug.augment(text)
                 self.assertTrue(
-                    "quick" not in augmented_text
-                    or "over" not in augmented_text
-                    or "lazy" not in augmented_text
+                    "quick" not in augmented_text or "over" not in augmented_text or "lazy" not in augmented_text
                 )
 
     def test_stopwords_regex(self):
         text = "The quick brown fox jumps over the lazy dog."
-        stopwords_regex = (
-            "( [a-zA-Z]{1}ox | [a-z]{1}og|(brown)|[a-zA-z]{1}he)|[a-z]{2}mps "
-        )
+        stopwords_regex = "( [a-zA-Z]{1}ox | [a-z]{1}og|(brown)|[a-zA-z]{1}he)|[a-z]{2}mps "
 
         augs = [
             nac.RandomCharAug(action="delete", stopwords_regex=stopwords_regex),
@@ -139,9 +135,7 @@ class TestCharacter(unittest.TestCase):
             for i in range(10):
                 augmented_text = aug.augment(text)
                 self.assertTrue(
-                    "quick" not in augmented_text
-                    or "over" not in augmented_text
-                    or "lazy" not in augmented_text
+                    "quick" not in augmented_text or "over" not in augmented_text or "lazy" not in augmented_text
                 )
 
     def test_min_char(self):

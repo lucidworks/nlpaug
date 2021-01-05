@@ -11,9 +11,7 @@ class ChangeLog:
     def add(self, token, action, change_seq):
         if action != "original" and not self._is_changed:
             self._is_changed = True
-        self.change_logs.append(
-            Token(token=token, action=action, change_seq=change_seq)
-        )
+        self.change_logs.append(Token(token=token, action=action, change_seq=change_seq))
 
     def update(self, idx, token=None, action=None, change_seq=None):
         if not self._is_changed:

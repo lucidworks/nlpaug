@@ -15,9 +15,7 @@ from nlpaug.util import Action
 class TestFlow(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        env_config_path = os.path.abspath(
-            os.path.join(os.path.dirname(__file__), "..", "..", ".env")
-        )
+        env_config_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".env"))
         load_dotenv(env_config_path)
         # https://freewavesamples.com/yamaha-v50-rock-beat-120-bpm
         cls.sample_wav_file = os.path.join(
@@ -118,9 +116,7 @@ class TestFlow(unittest.TestCase):
             ),
             naf.Sequential(
                 [
-                    naf.Sequential(
-                        [nac.RandomCharAug(action="insert"), naw.RandomWordAug()]
-                    ),
+                    naf.Sequential([nac.RandomCharAug(action="insert"), naw.RandomWordAug()]),
                     naf.Sometimes(
                         [
                             nac.RandomCharAug(action="insert"),
@@ -146,18 +142,14 @@ class TestFlow(unittest.TestCase):
         audio, sampling_rate = AudioLoader.load_audio(self.sample_wav_file)
 
         flows = [
-            naf.Sequential(
-                [naa.CropAug(sampling_rate=sampling_rate), naa.LoudnessAug()]
-            ),
+            naf.Sequential([naa.CropAug(sampling_rate=sampling_rate), naa.LoudnessAug()]),
             naf.Sometimes(
                 [naa.CropAug(sampling_rate=sampling_rate), naa.LoudnessAug()],
                 pipeline_p=0.9,
             ),
             naf.Sequential(
                 [
-                    naf.Sequential(
-                        [naa.CropAug(sampling_rate=sampling_rate), naa.LoudnessAug()]
-                    ),
+                    naf.Sequential([naa.CropAug(sampling_rate=sampling_rate), naa.LoudnessAug()]),
                     naf.Sometimes(
                         [naa.CropAug(sampling_rate=sampling_rate), naa.LoudnessAug()],
                         pipeline_p=0.9,
@@ -175,15 +167,11 @@ class TestFlow(unittest.TestCase):
         self.assertLess(0, len(flows))
 
     def test_n_output_spectrogram(self):
-        mel_spectrogram = AudioLoader.load_mel_spectrogram(
-            self.sample_wav_file, n_mels=128
-        )
+        mel_spectrogram = AudioLoader.load_mel_spectrogram(self.sample_wav_file, n_mels=128)
         #
         flows = [
             naf.Sequential([nas.FrequencyMaskingAug(), nas.TimeMaskingAug()]),
-            naf.Sometimes(
-                [nas.FrequencyMaskingAug(), nas.TimeMaskingAug()], pipeline_p=0.9
-            ),
+            naf.Sometimes([nas.FrequencyMaskingAug(), nas.TimeMaskingAug()], pipeline_p=0.9),
             naf.Sequential(
                 [
                     naf.Sequential([nas.FrequencyMaskingAug(), nas.TimeMaskingAug()]),
@@ -199,9 +187,7 @@ class TestFlow(unittest.TestCase):
             augmented_mel_spectrograms = flow.augment(mel_spectrogram, n=3)
             self.assertGreater(len(augmented_mel_spectrograms), 1)
             for augmented_mel_spectrogram in augmented_mel_spectrograms:
-                self.assertFalse(
-                    np.array_equal(mel_spectrogram, augmented_mel_spectrogram)
-                )
+                self.assertFalse(np.array_equal(mel_spectrogram, augmented_mel_spectrogram))
 
         self.assertLess(0, len(flows))
 
@@ -209,9 +195,7 @@ class TestFlow(unittest.TestCase):
         texts = ["AAAAAAAAAAA AAAAAAAAAAAAAA"]
         flows = [
             naf.Sequential([nac.OcrAug(), nac.OcrAug()]),
-            naf.Sometimes(
-                [nac.RandomCharAug(), nac.RandomCharAug()], pipeline_p=0.00001
-            ),
+            naf.Sometimes([nac.RandomCharAug(), nac.RandomCharAug()], pipeline_p=0.00001),
         ]
 
         for flow in flows:
@@ -247,9 +231,7 @@ class TestFlow(unittest.TestCase):
                     naf.Sequential(
                         [
                             nac.OcrAug(),
-                            naw.WordEmbsAug(
-                                model_type="word2vec", model_path=w2v_model_path
-                            ),
+                            naw.WordEmbsAug(model_type="word2vec", model_path=w2v_model_path),
                         ]
                     ),
                     naf.Sequential(
@@ -274,11 +256,7 @@ class TestFlow(unittest.TestCase):
                         ]
                     ),
                     naf.Sometimes(
-                        [
-                            naw.WordEmbsAug(
-                                model_type="word2vec", model_path=w2v_model_path
-                            )
-                        ],
+                        [naw.WordEmbsAug(model_type="word2vec", model_path=w2v_model_path)],
                         pipeline_p=0.999,
                     ),
                     naw.ContextualWordEmbsAug(

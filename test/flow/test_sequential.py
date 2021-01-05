@@ -14,9 +14,7 @@ from nlpaug.util import Action, AudioLoader
 class TestSequential(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        env_config_path = os.path.abspath(
-            os.path.join(os.path.dirname(__file__), "..", "..", ".env")
-        )
+        env_config_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".env"))
         load_dotenv(env_config_path)
         # https://freewavesamples.com/yamaha-v50-rock-beat-120-bpm
         cls.sample_wav_file = os.path.join(
@@ -54,9 +52,7 @@ class TestSequential(unittest.TestCase):
         ]
 
         flows = [
-            naf.Sequential(
-                [nac.RandomCharAug(action=Action.INSERT), naw.RandomWordAug()]
-            ),
+            naf.Sequential([nac.RandomCharAug(action=Action.INSERT), naw.RandomWordAug()]),
             naf.Sequential(
                 [
                     nac.OcrAug(),
@@ -83,9 +79,7 @@ class TestSequential(unittest.TestCase):
         self.assertLess(0, len(flows))
 
     def test_spectrogram(self):
-        mel_spectrogram = AudioLoader.load_mel_spectrogram(
-            self.sample_wav_file, n_mels=128
-        )
+        mel_spectrogram = AudioLoader.load_mel_spectrogram(self.sample_wav_file, n_mels=128)
 
         flow = naf.Sequential(
             [
@@ -99,12 +93,8 @@ class TestSequential(unittest.TestCase):
 
         for aug in flow:
             if aug.name == "FrequencyMasking_Aug":
-                aug_data = augmented_mel_spectrogram[
-                    aug.f0 : aug.f0 + aug.f, aug.time_start : aug.time_end
-                ]
-                orig_data = mel_spectrogram[
-                    aug.f0 : aug.f0 + aug.f, aug.time_start : aug.time_end
-                ]
+                aug_data = augmented_mel_spectrogram[aug.f0 : aug.f0 + aug.f, aug.time_start : aug.time_end]
+                orig_data = mel_spectrogram[aug.f0 : aug.f0 + aug.f, aug.time_start : aug.time_end]
 
                 self.assertEqual(orig_data.size, np.count_nonzero(orig_data))
                 self.assertEqual(0, np.count_nonzero(aug_data))
@@ -113,9 +103,7 @@ class TestSequential(unittest.TestCase):
                     len(mel_spectrogram[:, aug.t0]),
                     np.count_nonzero(mel_spectrogram[:, aug.t0]),
                 )
-                self.assertEqual(
-                    0, np.count_nonzero(augmented_mel_spectrogram[:, aug.t0])
-                )
+                self.assertEqual(0, np.count_nonzero(augmented_mel_spectrogram[:, aug.t0]))
             else:
                 raise ValueError("Unexpected flow for {} augmenter".format(aug.name))
 

@@ -8,9 +8,7 @@ import nlpaug.augmenter.sentence as nas
 class TestContextualWordEmbsAug(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        env_config_path = os.path.abspath(
-            os.path.join(os.path.dirname(__file__), "..", "..", "..", ".env")
-        )
+        env_config_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", ".env"))
         load_dotenv(env_config_path)
 
         cls.model_paths = ["xlnet-base-cased", "gpt2", "distilgpt2"]
@@ -27,9 +25,7 @@ class TestContextualWordEmbsAug(unittest.TestCase):
 
     def execute_by_device(self, device):
         for model_path in self.model_paths:
-            aug = nas.ContextualWordEmbsForSentenceAug(
-                model_path=model_path, device=device
-            )
+            aug = nas.ContextualWordEmbsForSentenceAug(model_path=model_path, device=device)
 
             self.empty_input(aug)
 
@@ -133,16 +129,12 @@ class TestContextualWordEmbsAug(unittest.TestCase):
 
     def test_none_device(self):
         for model_path in self.model_paths:
-            aug = nas.ContextualWordEmbsForSentenceAug(
-                model_path=model_path, force_reload=True, device=None
-            )
+            aug = nas.ContextualWordEmbsForSentenceAug(model_path=model_path, force_reload=True, device=None)
             self.assertTrue(aug.device == "cpu")
 
     def test_reset_model(self):
         for model_path in self.model_paths:
-            original_aug = nas.ContextualWordEmbsForSentenceAug(
-                model_path=model_path, top_p=0.5
-            )
+            original_aug = nas.ContextualWordEmbsForSentenceAug(model_path=model_path, top_p=0.5)
             original_temperature = original_aug.model.temperature
             original_top_k = original_aug.model.top_k
             original_top_p = original_aug.model.top_p

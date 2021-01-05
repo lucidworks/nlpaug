@@ -257,9 +257,7 @@ class RandomWordAug(WordAugmenter):
                 change_seq=self.parent_change_seq + change_seq,
             )
             if aug_idx == 0:
-                new_token = self.align_capitalization(
-                    original_token, doc.get_token(1).orig_token.token
-                )
+                new_token = self.align_capitalization(original_token, doc.get_token(1).orig_token.token)
                 doc.add_change_log(
                     1,
                     new_token=new_token,
@@ -302,9 +300,7 @@ class RandomWordAug(WordAugmenter):
                 change_seq=self.parent_change_seq + change_seq,
             )
             if aug_idx == 0:
-                new_token = self.align_capitalization(
-                    original_token, doc.get_token(1).orig_token.token
-                )
+                new_token = self.align_capitalization(original_token, doc.get_token(1).orig_token.token)
                 doc.add_change_log(
                     1,
                     new_token=new_token,

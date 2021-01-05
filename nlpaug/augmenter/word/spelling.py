@@ -76,11 +76,7 @@ class SpellingAug(WordAugmenter):
         )
 
         self.dict_path = (
-            dict_path
-            if dict_path
-            else os.path.join(
-                LibraryUtil.get_res_dir(), "word", "spelling", "spelling_en.txt"
-            )
+            dict_path if dict_path else os.path.join(LibraryUtil.get_res_dir(), "word", "spelling", "spelling_en.txt")
         )
         self.include_reverse = include_reverse
         self.model = self.get_model(force_reload=False)
@@ -123,9 +119,7 @@ class SpellingAug(WordAugmenter):
                 substitute_token = original_token
 
             if aug_idx == 0:
-                substitute_token = self.align_capitalization(
-                    original_token, substitute_token
-                )
+                substitute_token = self.align_capitalization(original_token, substitute_token)
 
             change_seq += 1
             doc.add_change_log(
@@ -144,6 +138,4 @@ class SpellingAug(WordAugmenter):
             return self.reverse_tokenizer(doc.get_augmented_tokens())
 
     def get_model(self, force_reload):
-        return init_spelling_error_model(
-            self.dict_path, self.include_reverse, force_reload
-        )
+        return init_spelling_error_model(self.dict_path, self.include_reverse, force_reload)

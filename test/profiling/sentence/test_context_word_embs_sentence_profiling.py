@@ -9,9 +9,7 @@ import nlpaug.augmenter.sentence as nas
 class TestContextualWordEmbsAugProfiling(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        env_config_path = os.path.abspath(
-            os.path.join(os.path.dirname(__file__), "..", "..", "..", ".env")
-        )
+        env_config_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", ".env"))
         load_dotenv(env_config_path)
 
         cls.text = "The quick brown fox jumps over the lazy dog."
@@ -40,9 +38,7 @@ class TestContextualWordEmbsAugProfiling(unittest.TestCase):
                 durations.append(round(end_dt - start_dt, 2))
 
             optimized_total_duration = sum(durations)
-            optimized_average_duration = round(
-                optimized_total_duration / len(durations), 2
-            )
+            optimized_average_duration = round(optimized_total_duration / len(durations), 2)
 
             # No optimized
             durations = []
@@ -55,9 +51,7 @@ class TestContextualWordEmbsAugProfiling(unittest.TestCase):
                 durations.append(round(end_dt - start_dt, 2))
 
             no_optimized_total_duration = sum(durations)
-            no_optimized_average_duration = round(
-                no_optimized_total_duration / len(durations), 2
-            )
+            no_optimized_average_duration = round(no_optimized_total_duration / len(durations), 2)
 
             print(
                 "Model:{}, Optimized: {}({}), No Optimized: {}({})".format(
@@ -70,6 +64,4 @@ class TestContextualWordEmbsAugProfiling(unittest.TestCase):
             )
 
             self.assertGreater(no_optimized_total_duration, optimized_total_duration)
-            self.assertGreater(
-                no_optimized_average_duration, optimized_average_duration
-            )
+            self.assertGreater(no_optimized_average_duration, optimized_average_duration)

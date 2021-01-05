@@ -47,18 +47,10 @@ class Augmenter:
     @classmethod
     def _validate_augmenter(cls, method, action):
         if method not in Method.getall():
-            raise ValueError(
-                "Method must be one of {} while {} is passed".format(
-                    Method.getall(), method
-                )
-            )
+            raise ValueError("Method must be one of {} while {} is passed".format(Method.getall(), method))
 
         if action not in Action.getall():
-            raise ValueError(
-                "Action must be one of {} while {} is passed".format(
-                    Action.getall(), action
-                )
-            )
+            raise ValueError("Action must be one of {} while {} is passed".format(Action.getall(), action))
 
     def augment(self, data, n=1, num_thread=1):
         """
@@ -73,9 +65,7 @@ class Augmenter:
         >>> augmented_data = aug.augment(data)
 
         """
-        max_retry_times = (
-            3  # max loop times of n to generate expected number of outputs
-        )
+        max_retry_times = 3  # max loop times of n to generate expected number of outputs
         aug_num = 1 if isinstance(data, list) else n
         expected_output_num = len(data) if isinstance(data, list) else aug_num
 
@@ -134,20 +124,13 @@ class Augmenter:
 
                 # Multi Thread
                 else:
-                    batch_data = [
-                        data[i : i + num_thread]
-                        for i in range(0, len(data), num_thread)
-                    ]
+                    batch_data = [data[i : i + num_thread] for i in range(0, len(data), num_thread)]
                     for mini_batch_data in batch_data:
-                        augmented_results.extend(
-                            self._parallel_augments(self.augment, mini_batch_data)
-                        )
+                        augmented_results.extend(self._parallel_augments(self.augment, mini_batch_data))
 
             # Single input with/without multiple input
             else:
-                augmented_results = self._parallel_augment(
-                    action_fx, clean_data, n=n, num_thread=num_thread
-                )
+                augmented_results = self._parallel_augment(action_fx, clean_data, n=n, num_thread=num_thread)
 
             if len(augmented_results) >= expected_output_num:
                 break
@@ -297,6 +280,4 @@ class Augmenter:
         return aug_idxes
 
     def __str__(self):
-        return "Name:{}, Action:{}, Method:{}".format(
-            self.name, self.action, self.method
-        )
+        return "Name:{}, Action:{}, Method:{}".format(self.name, self.action, self.method)

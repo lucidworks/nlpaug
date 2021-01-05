@@ -1,8 +1,6 @@
 import re
 
-ADDING_SPACE_AROUND_PUNCTUATION_REGEX = re.compile(
-    r"(?<! )(?=[.,!?()])|(?<=[.,!?()])(?! )"
-)
+ADDING_SPACE_AROUND_PUNCTUATION_REGEX = re.compile(r"(?<! )(?=[.,!?()])|(?<=[.,!?()])(?! )")
 
 SPLIT_WORD_REGEX = re.compile(r"\b.*?\S.*?(?:\b|$)")
 

@@ -50,11 +50,7 @@ class CharAugmenter(Augmenter):
         self.tokenizer = tokenizer or Tokenizer.tokenizer
         self.reverse_tokenizer = reverse_tokenizer or Tokenizer.reverse_tokenizer
         self.stopwords = stopwords
-        self.stopwords_regex = (
-            re.compile(stopwords_regex)
-            if stopwords_regex is not None
-            else stopwords_regex
-        )
+        self.stopwords_regex = re.compile(stopwords_regex) if stopwords_regex is not None else stopwords_regex
         self.include_special_char = include_special_char
 
     @classmethod

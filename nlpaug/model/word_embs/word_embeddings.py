@@ -53,12 +53,8 @@ class WordEmbeddings:
         source_id = self.word2idx(word)
         source_vector = self.word2vector(word)
         scores = np.dot(self.normalized_vectors, source_vector)  # TODO: very slow.
-        target_ids = np.argpartition(-scores, self.top_k + 2)[
-            : self.top_k + 2
-        ]  # TODO: slow.
+        target_ids = np.argpartition(-scores, self.top_k + 2)[: self.top_k + 2]  # TODO: slow.
         target_words = [
-            self.idx2word(idx)
-            for idx in target_ids
-            if idx != source_id and self.idx2word(idx).lower() != word.lower()
+            self.idx2word(idx) for idx in target_ids if idx != source_id and self.idx2word(idx).lower() != word.lower()
         ]  # filter out same word
         return target_words[: self.top_k]

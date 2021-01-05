@@ -37,9 +37,7 @@ class Gpt2(LanguageModels):
         try:
             from transformers import AutoModelForCausalLM, AutoTokenizer
         except ModuleNotFoundError:
-            raise ModuleNotFoundError(
-                "Missed transformers library. Install transfomers by `pip install transformers`"
-            )
+            raise ModuleNotFoundError("Missed transformers library. Install transfomers by `pip install transformers`")
 
         self.model_path = model_path
 
@@ -47,16 +45,10 @@ class Gpt2(LanguageModels):
         self.pad_id = 1  # No padding for GPT2, https://github.com/huggingface/transformers/issues/2630
         if silence:
             # Transformers thrown an warning regrading to weight initialization. It is expected
-            orig_log_level = logging.getLogger(
-                "transformers." + "modeling_utils"
-            ).getEffectiveLevel()
-            logging.getLogger("transformers." + "modeling_utils").setLevel(
-                logging.ERROR
-            )
+            orig_log_level = logging.getLogger("transformers." + "modeling_utils").getEffectiveLevel()
+            logging.getLogger("transformers." + "modeling_utils").setLevel(logging.ERROR)
             self.model = AutoModelForCausalLM.from_pretrained(model_path)
-            logging.getLogger("transformers." + "modeling_utils").setLevel(
-                orig_log_level
-            )
+            logging.getLogger("transformers." + "modeling_utils").setLevel(orig_log_level)
         else:
             self.model = AutoModelForCausalLM.from_pretrained(model_path)
 
@@ -83,9 +75,7 @@ class Gpt2(LanguageModels):
         # Pad token
         max_token_size = max([len(t) for t in input_idxes])
         for i, token_input in enumerate(input_idxes):
-            mask_input = [1] * len(
-                input_idxes[0]
-            )  # 1: are not masked, 0: masked token (for padding)
+            mask_input = [1] * len(input_idxes[0])  # 1: are not masked, 0: masked token (for padding)
 
             for _ in range(max_token_size - len(token_input)):
                 input_idxes[i].append(self.pad_id)
@@ -116,9 +106,7 @@ class Gpt2(LanguageModels):
                 "top_p": self.top_p,
             }
             target_token_logits = self.control_randomness(target_token_logits, seed)
-            target_token_logits, target_token_idxes = self.filtering(
-                target_token_logits, seed
-            )
+            target_token_logits, target_token_idxes = self.filtering(target_token_logits, seed)
             if len(target_token_idxes) != 0:
                 new_tokens = self.pick(
                     target_token_logits,

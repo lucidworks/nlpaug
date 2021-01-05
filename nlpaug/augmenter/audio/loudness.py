@@ -56,6 +56,4 @@ class LoudnessAug(AudioAugmenter):
                 loudness_level,
             )
 
-        return self.model.manipulate(
-            data, start_pos=start_pos, end_pos=end_pos, loudness_level=loudness_level
-        )
+        return self.model.manipulate(data, start_pos=start_pos, end_pos=end_pos, loudness_level=loudness_level)

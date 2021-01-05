@@ -169,10 +169,7 @@ class TfIdfAug(WordAugmenter):
                 change_seq=self.parent_change_seq + change_seq,
             )
 
-            if (
-                self.get_word_case(doc.get_token(0).get_latest_token().token)
-                == "capitalize"
-            ):
+            if self.get_word_case(doc.get_token(0).get_latest_token().token) == "capitalize":
                 change_token = doc.get_token(1).get_latest_token().token.lower()
                 doc.add_change_log(
                     1,
@@ -205,9 +202,7 @@ class TfIdfAug(WordAugmenter):
             candidate_tokens = self.model.predict(original_token, top_k=self.top_k)
             substitute_token = self.sample(candidate_tokens, 1)[0]
             if aug_idx == 0:
-                substitute_token = self.align_capitalization(
-                    original_token, substitute_token
-                )
+                substitute_token = self.align_capitalization(original_token, substitute_token)
 
             change_seq += 1
             doc.add_change_log(

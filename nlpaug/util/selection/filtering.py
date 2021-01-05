@@ -52,9 +52,7 @@ def filter_top_k(data, k, replace=None, ascending=False):
         return filter_top_k_numpy(data, k, replace, ascending)
     if isinstance(data, torch.Tensor):
         return filter_top_k_pytorch(data, k, replace, ascending)
-    raise ValueError(
-        "Only support numpy or pytorch's tensor while {} is provided".format(type(data))
-    )
+    raise ValueError("Only support numpy or pytorch's tensor while {} is provided".format(type(data)))
 
 
 def filter_top_k_numpy(data, k, replace=None, ascending=False):

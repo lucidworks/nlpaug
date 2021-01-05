@@ -66,9 +66,7 @@ class ReservedAug(WordAugmenter):
         self.reserved_phrase_regexs = []
 
         if not case_sensitive:
-            self.reserved_lower_tokens = [
-                t.lower() for tokens in reserved_tokens for t in tokens
-            ]
+            self.reserved_lower_tokens = [t.lower() for tokens in reserved_tokens for t in tokens]
 
         reserved_phrase_dict_by_len = defaultdict(list)
         for i, tokens in enumerate(reserved_tokens):
@@ -83,9 +81,7 @@ class ReservedAug(WordAugmenter):
                     self.reserved_token_dict[t] = i
                 else:
                     # For phrase
-                    reserved_phrase_dict_by_len[len(phrase_tokens)].append(
-                        (t, phrase_tokens, i)
-                    )
+                    reserved_phrase_dict_by_len[len(phrase_tokens)].append((t, phrase_tokens, i))
 
         for i in sorted(reserved_phrase_dict_by_len.keys(), reverse=True):
             for phrase, phrase_tokens, pos in reserved_phrase_dict_by_len[i]:
@@ -151,15 +147,9 @@ class ReservedAug(WordAugmenter):
                         candidate_tokens.append(t)
             elif original_token in self.reserved_phrase_concats:
                 candidate_tokens = []
-                for t in self.reserved_tokens[
-                    self.reserved_phrase_dict[original_token]
-                ]:
+                for t in self.reserved_tokens[self.reserved_phrase_dict[original_token]]:
                     compare_token = t.replace(" ", self.CONNECT_TOKEN)
-                    compare_token = (
-                        compare_token.lower()
-                        if not self.case_sensitive
-                        else compare_token
-                    )
+                    compare_token = compare_token.lower() if not self.case_sensitive else compare_token
                     if compare_token != original_token:
                         candidate_tokens.append(t)
 

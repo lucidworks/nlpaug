@@ -8,9 +8,7 @@ import nlpaug.augmenter.word as naw
 class TestAntonym(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        env_config_path = os.path.abspath(
-            os.path.join(os.path.dirname(__file__), "..", "..", "..", ".env")
-        )
+        env_config_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", ".env"))
         load_dotenv(env_config_path)
 
         cls.augs = [naw.AntonymAug()]

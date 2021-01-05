@@ -17,9 +17,7 @@ class Vtlp(Audio):
         try:
             import librosa
         except ModuleNotFoundError:
-            raise ModuleNotFoundError(
-                "Missed librosa library. Install import librosa by `pip install librosa`"
-            )
+            raise ModuleNotFoundError("Missed librosa library. Install import librosa by `pip install librosa`")
 
     @classmethod
     def get_scale_factors(cls, freq_dim, sampling_rate, fhi=4800, alpha=0.9):
@@ -35,9 +33,7 @@ class Vtlp(Audio):
             if f <= f_boundary:
                 factors.append(f * alpha)
             else:
-                warp_freq = half_sr - (half_sr - scale) / (half_sr - scale / alpha) * (
-                    half_sr - f
-                )
+                warp_freq = half_sr - (half_sr - scale) / (half_sr - scale / alpha) * (half_sr - f)
                 factors.append(warp_freq)
 
         return np.array(factors)
@@ -67,10 +63,6 @@ class Vtlp(Audio):
         return librosa.core.istft(new_stft)
 
     def manipulate(self, data, start_pos, end_pos, sampling_rate, warp_factor):
-        aug_data = self._manipulate(
-            data[start_pos:end_pos], sampling_rate=sampling_rate, factor=warp_factor
-        )
+        aug_data = self._manipulate(data[start_pos:end_pos], sampling_rate=sampling_rate, factor=warp_factor)
 
-        return np.concatenate(
-            (data[:start_pos], aug_data, data[end_pos:]), axis=0
-        ).astype(type(data[0]))
+        return np.concatenate((data[:start_pos], aug_data, data[end_pos:]), axis=0).astype(type(data[0]))
