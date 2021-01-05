@@ -3,6 +3,7 @@
 """
 
 import os
+from typing import List
 
 from nlpaug.augmenter.word import WordAugmenter
 from nlpaug.util import (
@@ -94,7 +95,7 @@ class SynonymAug(WordAugmenter):
         self.lang = lang
         self.model = self.get_model(aug_src, lang, model_path, force_reload)
 
-    def skip_aug(self, token_idxes, tokens):
+    def skip_aug(self, token_idxes: List[int], tokens: List[str]):
         results = []
         for token_idx in token_idxes:
             to_be_keep = True
@@ -123,9 +124,9 @@ class SynonymAug(WordAugmenter):
 
         return results
 
-    def _get_aug_idxes(self, tokens):
+    def _get_aug_idxes(self, tokens, tuple_idx=0):
         aug_cnt = self.generate_aug_cnt(len(tokens))
-        word_idxes = self.pre_skip_aug(tokens, tuple_idx=0)
+        word_idxes = self.pre_skip_aug(tokens, tuple_idx=tuple_idx)
         word_idxes = self.skip_aug(word_idxes, tokens)
         if len(word_idxes) == 0:
             if self.verbose > 0:
@@ -148,7 +149,9 @@ class SynonymAug(WordAugmenter):
         change_seq = 0
         doc = Doc(data, self.tokenizer(data))
 
-        pos = self.model.pos_tag(doc.get_original_tokens())
+        original_tokens = doc.get_original_tokens()
+
+        pos = self.model.pos_tag(original_tokens)
 
         aug_idxes = self._get_aug_idxes(pos)
         if aug_idxes is None or len(aug_idxes) == 0:
@@ -156,10 +159,8 @@ class SynonymAug(WordAugmenter):
                 return data, []
             return data
 
-        for aug_idx, original_token in enumerate(doc.get_original_tokens()):
-            # Skip if no augment for word
-            if aug_idx not in aug_idxes:
-                continue
+        for aug_idx in aug_idxes:
+            original_token = original_tokens[aug_idx]
 
             word_poses = PartOfSpeech.constituent2pos(pos[aug_idx][1])
             candidates = []

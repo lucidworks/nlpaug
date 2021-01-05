@@ -11,5 +11,16 @@ from nlpaug.augmenter.audio.vtlp import VtlpAug
 from nlpaug.augmenter.audio.normalization import NormalizeAug
 from nlpaug.augmenter.audio.inversion import PolarityInverseAug
 
-__all__ = ['audio_augmenter', 'noise', 'shift', 'speed', 'pitch', 'loudness', 'crop', 'mask', 'vtlp', 
-'normalization', 'inversion']
+__all__ = [
+    "audio_augmenter",
+    "noise",
+    "shift",
+    "speed",
+    "pitch",
+    "loudness",
+    "crop",
+    "mask",
+    "vtlp",
+    "normalization",
+    "inversion",
+]

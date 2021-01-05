@@ -15,10 +15,14 @@ class PolarityInverseAug(AudioAugmenter):
     >>> aug = naa.PolarityInverseAug()
     """
 
-    def __init__(self, name='PolarityInverse_Aug', verbose=0, stateless=True):
+    def __init__(self, name="PolarityInverse_Aug", verbose=0, stateless=True):
         super().__init__(
-            action=Action.SUBSTITUTE, name=name, device='cpu', verbose=verbose, 
-            stateless=stateless)
+            action=Action.SUBSTITUTE,
+            name=name,
+            device="cpu",
+            verbose=verbose,
+            stateless=stateless,
+        )
 
         self.model = nma.PolarityInversion()
 

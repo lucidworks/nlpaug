@@ -25,6 +25,7 @@ class Augmenter:
         include_detail=False,
         parallelable=False,
         verbose=0,
+        seed=None,
     ):
 
         self.name = name
@@ -37,6 +38,7 @@ class Augmenter:
         self.verbose = verbose
         self.include_detail = include_detail
         self.parallelable = parallelable
+        self.seed = seed
 
         self.parent_change_seq = 0
 
@@ -252,12 +254,15 @@ class Augmenter:
     def is_duplicate(cls, dataset, data):
         raise NotImplementedError
 
-    @classmethod
-    def prob(cls):
+    def prob(self):
+        if self.seed:
+            np.random.seed(self.seed)
         return np.random.random()
 
-    @classmethod
-    def sample(cls, x, num=None):
+    def sample(self, x, num=None):
+        if self.seed:
+            random.seed(self.seed)
+            np.random.seed(self.seed)
         if isinstance(x, list):
             return random.sample(x, num)
         elif isinstance(x, int):
