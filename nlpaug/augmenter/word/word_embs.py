@@ -28,7 +28,11 @@ def init_word_embs_model(model_path, model_type, force_reload=False, top_k=None)
         model = nmw.Fasttext(top_k=top_k)
         model.read(model_path)
     else:
-        raise ValueError("Model type value is unexpected. Expected values include {}".format(model_types))
+        raise ValueError(
+            "Model type value is unexpected. Expected values include {}".format(
+                model_types
+            )
+        )
 
     WORD_EMBS_MODELS[model_type] = model
     return model
@@ -118,7 +122,11 @@ class WordEmbsAug(WordAugmenter):
 
     def pre_validate(self):
         if self.model_type not in model_types:
-            raise ValueError("Model type value is unexpected. Expected values include {}".format(model_types))
+            raise ValueError(
+                "Model type value is unexpected. Expected values include {}".format(
+                    model_types
+                )
+            )
 
     @classmethod
     def get_model(cls, model_path, model_type, force_reload=False, top_k=100):
@@ -188,7 +196,9 @@ class WordEmbsAug(WordAugmenter):
             candidate_tokens = self.model.predict(original_token, n=1)
             substitute_token = self.sample(candidate_tokens, 1)[0]
             if aug_idx == 0:
-                substitute_token = self.align_capitalization(original_token, substitute_token)
+                substitute_token = self.align_capitalization(
+                    original_token, substitute_token
+                )
 
             change_seq += 1
             doc.add_change_log(

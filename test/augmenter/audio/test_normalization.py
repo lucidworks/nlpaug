@@ -10,7 +10,9 @@ from nlpaug.util import AudioLoader
 class TestNormalization(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        env_config_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", ".env"))
+        env_config_path = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "..", "..", "..", ".env")
+        )
         load_dotenv(env_config_path)
         # https://freewavesamples.com/yamaha-v50-rock-beat-120-bpm
         cls.sample_wav_file = os.path.join(
@@ -31,7 +33,9 @@ class TestNormalization(unittest.TestCase):
     def test_non_exist_method(self):
         with self.assertRaises(ValueError) as error:
             aug = naa.NormalizeAug(method="test1234")
-        self.assertTrue("does not support yet. You may pick one" in str(error.exception))
+        self.assertTrue(
+            "does not support yet. You may pick one" in str(error.exception)
+        )
 
     def test_minmax(self):
         aug = naa.NormalizeAug(method="minmax")

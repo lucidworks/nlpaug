@@ -17,7 +17,9 @@ class Ppdb(WordDictionary):
         self.dict_path = dict_path
         self.lang = "eng"  # TODO: support other languages
 
-        self.score_threshold = self.get_default_score_thresholds()  # TODO: support other filtering
+        self.score_threshold = (
+            self.get_default_score_thresholds()
+        )  # TODO: support other filtering
         self.is_synonym = True  # TODO: antonyms
 
         self._init()
@@ -57,12 +59,18 @@ class Ppdb(WordDictionary):
 
                     features = fields[3].strip().split()
                     features = [
-                        feature for feature in features for s in self.score_threshold if s in feature
+                        feature
+                        for feature in features
+                        for s in self.score_threshold
+                        if s in feature
                     ]  # filter by scheme
 
                     for feature in features:
                         scheme, score = feature.split("=")
-                        if scheme in self.score_threshold and float(score) > self.score_threshold[scheme]:
+                        if (
+                            scheme in self.score_threshold
+                            and float(score) > self.score_threshold[scheme]
+                        ):
                             scores.append((scheme, score))
 
                     # # filter by feature/ score
@@ -72,7 +80,11 @@ class Ppdb(WordDictionary):
                 if phrase not in self.dict:
                     self.dict[phrase] = {}
 
-                part_of_speeches = [pos for con in constituents for pos in PartOfSpeech.constituent2pos(con)]
+                part_of_speeches = [
+                    pos
+                    for con in constituents
+                    for pos in PartOfSpeech.constituent2pos(con)
+                ]
 
                 for pos in part_of_speeches:
                     if pos not in self.dict[phrase]:

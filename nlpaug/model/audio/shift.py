@@ -8,7 +8,9 @@ class Shift(Audio):
     def validate(self, direction):
         if direction not in ["left", "right", "random"]:
             raise ValueError(
-                "shift_direction should be either left, right or both while {} is passed.".format(direction)
+                "shift_direction should be either left, right or both while {} is passed.".format(
+                    direction
+                )
             )
 
     def manipulate(self, data, shift):

@@ -95,11 +95,15 @@ class TfIdf(WordStatistics):
         self.tfidf_scores = list(self.w2tfidf.values())
 
     def save(self, model_path):
-        with open(os.path.join(model_path, self.WORD_2_IDF_FILE_NAME), "w", encoding="utf-8") as f:
+        with open(
+            os.path.join(model_path, self.WORD_2_IDF_FILE_NAME), "w", encoding="utf-8"
+        ) as f:
             for w, s in self.w2idf.items():
                 f.write(str(w) + " " + str(s) + "\n")
 
-        with open(os.path.join(model_path, self.WORD_2_TFIDF_FILE_NAME), "w", encoding="utf-8") as f:
+        with open(
+            os.path.join(model_path, self.WORD_2_TFIDF_FILE_NAME), "w", encoding="utf-8"
+        ) as f:
             for w, s in self.w2tfidf.items():
                 f.write(str(w) + " " + str(s) + "\n")
 
@@ -107,12 +111,16 @@ class TfIdf(WordStatistics):
         self.w2idf = {}
         self.w2tfidf = {}
 
-        with open(os.path.join(model_path, self.WORD_2_IDF_FILE_NAME), "r", encoding="utf-8") as f:
+        with open(
+            os.path.join(model_path, self.WORD_2_IDF_FILE_NAME), "r", encoding="utf-8"
+        ) as f:
             for line in f.readlines():
                 w, s = line.split(" ")
                 self.w2idf[w] = float(s)
 
-        with open(os.path.join(model_path, self.WORD_2_TFIDF_FILE_NAME), "r", encoding="utf-8") as f:
+        with open(
+            os.path.join(model_path, self.WORD_2_TFIDF_FILE_NAME), "r", encoding="utf-8"
+        ) as f:
             for line in f.readlines():
                 w, s = line.split(" ")
                 self.w2tfidf[w] = float(s)

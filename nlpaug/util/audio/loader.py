@@ -11,7 +11,9 @@ class AudioLoader:
         try:
             import librosa
         except ModuleNotFoundError:
-            raise ModuleNotFoundError("Missed librosa library. Install import librosa by `pip install librosa`")
+            raise ModuleNotFoundError(
+                "Missed librosa library. Install import librosa by `pip install librosa`"
+            )
 
         return librosa.load(file_path)
 
@@ -20,7 +22,11 @@ class AudioLoader:
         try:
             import librosa
         except ModuleNotFoundError:
-            raise ModuleNotFoundError("Missed librosa library. Install import librosa by `pip install librosa`")
+            raise ModuleNotFoundError(
+                "Missed librosa library. Install import librosa by `pip install librosa`"
+            )
 
         audio, sampling_rate = AudioLoader.load_audio(file_path)
-        return librosa.feature.melspectrogram(y=audio, sr=sampling_rate, n_mels=n_mels, fmax=fmax)
+        return librosa.feature.melspectrogram(
+            y=audio, sr=sampling_rate, n_mels=n_mels, fmax=fmax
+        )

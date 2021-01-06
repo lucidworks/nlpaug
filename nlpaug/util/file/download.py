@@ -49,7 +49,9 @@ class DownloadUtil:
                 "glove.840B.300d",
                 "glove.twitter.27B",
             ]
-            raise ValueError("Unknown model_name. Possible values are {}".format(possible_values))
+            raise ValueError(
+                "Unknown model_name. Possible values are {}".format(possible_values)
+            )
 
         file_path = DownloadUtil.download(url, dest_dir=dest_dir)
         DownloadUtil.unzip(file_path)
@@ -76,7 +78,9 @@ class DownloadUtil:
         #     url = 'https://dl.fbaipublicfiles.com/fasttext/vectors-english/crawl-300d-2M-subword.zip'
         else:
             possible_values = ["wiki-news-300d-1M", "crawl-300d-2M"]
-            raise ValueError("Unknown model_name. Possible values are {}".format(possible_values))
+            raise ValueError(
+                "Unknown model_name. Possible values are {}".format(possible_values)
+            )
 
         file_path = DownloadUtil.download(url, dest_dir=dest_dir)
         DownloadUtil.unzip(file_path)

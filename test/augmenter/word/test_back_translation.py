@@ -9,7 +9,9 @@ import nlpaug.model.lang_models as nml
 class TestBackTranslationAug(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        env_config_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", ".env"))
+        env_config_path = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "..", "..", "..", ".env")
+        )
         load_dotenv(env_config_path)
 
         cls.text = "The quick brown fox jumps over the lazy dog"
@@ -56,7 +58,9 @@ class TestBackTranslationAug(unittest.TestCase):
     def test_load_from_local_path(self):
         base_model_dir = os.environ.get("MODEL_DIR")
         from_model_dir = os.path.join(base_model_dir, "word", "fairseq", "wmt19.en-de")
-        to_model_dir = os.path.join(base_model_dir, "word", "fairseq", "wmt19.de-en", "")
+        to_model_dir = os.path.join(
+            base_model_dir, "word", "fairseq", "wmt19.de-en", ""
+        )
 
         aug = naw.BackTranslationAug(
             from_model_name=from_model_dir,

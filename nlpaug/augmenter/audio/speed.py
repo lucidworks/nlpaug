@@ -60,4 +60,6 @@ class SpeedAug(AudioAugmenter):
         if not self.stateless:
             self.start_pos, self.end_pos, self.aug_factor = start_pos, end_pos, speed
 
-        return self.model.manipulate(data, start_pos=start_pos, end_pos=end_pos, speed=speed)
+        return self.model.manipulate(
+            data, start_pos=start_pos, end_pos=end_pos, speed=speed
+        )

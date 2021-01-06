@@ -20,7 +20,9 @@ class TestSometimes(unittest.TestCase):
         # Since prob may be low and causing do not perform data augmentation. Retry 5 times
         at_least_one_not_equal = False
         for _ in range(0, 5):
-            flow = naf.Sometimes([nac.RandomCharAug(action=Action.INSERT)], pipeline_p=0.6)
+            flow = naf.Sometimes(
+                [nac.RandomCharAug(action=Action.INSERT)], pipeline_p=0.6
+            )
             for text in texts:
                 augmented_text = flow.augment(text)
 

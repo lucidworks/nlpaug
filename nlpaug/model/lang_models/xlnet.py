@@ -53,7 +53,9 @@ class XlNet(LanguageModels):
         try:
             from transformers import AutoModelForCausalLM, AutoTokenizer
         except ModuleNotFoundError:
-            raise ModuleNotFoundError("Missed transformers library. Install transfomers by `pip install transformers`")
+            raise ModuleNotFoundError(
+                "Missed transformers library. Install transfomers by `pip install transformers`"
+            )
 
         self.model_path = model_path
 
@@ -65,14 +67,22 @@ class XlNet(LanguageModels):
         config = {"mem_len": self.optimize["external_memory"]}
         if silence:
             # Transformers thrown an warning regrading to weight initialization. It is expected
-            orig_log_level = logging.getLogger("transformers." + "modeling_utils").getEffectiveLevel()
-            logging.getLogger("transformers." + "modeling_utils").setLevel(logging.ERROR)
+            orig_log_level = logging.getLogger(
+                "transformers." + "modeling_utils"
+            ).getEffectiveLevel()
+            logging.getLogger("transformers." + "modeling_utils").setLevel(
+                logging.ERROR
+            )
             self.model = AutoModelForCausalLM.from_pretrained(model_path, config=config)
-            logging.getLogger("transformers." + "modeling_utils").setLevel(orig_log_level)
+            logging.getLogger("transformers." + "modeling_utils").setLevel(
+                orig_log_level
+            )
         else:
             self.model = AutoModelForCausalLM.from_pretrained(model_path, config=config)
 
-        self.padding_text_idxes = self.tokenizer.encode(padding_text or self.PADDING_TEXT)
+        self.padding_text_idxes = self.tokenizer.encode(
+            padding_text or self.PADDING_TEXT
+        )
 
         self.model.to(self.device)
         self.model.eval()
@@ -118,7 +128,9 @@ class XlNet(LanguageModels):
         target_poses = []
         if external_memory is None:  # First step or does not enable optimization
             for i, tokens in enumerate(input_idxes):
-                target_poses.append(len(self.padding_text_idxes) + tokens.index(self.mask_id))
+                target_poses.append(
+                    len(self.padding_text_idxes) + tokens.index(self.mask_id)
+                )
                 input_idxes[i] = self.padding_text_idxes + tokens
         else:
             for i, tokens in enumerate(input_idxes):
@@ -128,7 +140,9 @@ class XlNet(LanguageModels):
             (len(input_idxes), len(input_idxes[0]), len(input_idxes[0])),
             dtype=torch.float,
         )
-        target_mappings = torch.zeros((len(input_idxes), 1, len(input_idxes[0])), dtype=torch.float)
+        target_mappings = torch.zeros(
+            (len(input_idxes), 1, len(input_idxes[0])), dtype=torch.float
+        )
         for i, target_pos in enumerate(target_poses):
             perm_masks[i][:, target_pos] = 1.0  # Mask the target word
             target_mappings[i, 0, target_pos] = 1.0
@@ -158,7 +172,9 @@ class XlNet(LanguageModels):
                 "top_p": self.top_p,
             }
             target_token_logits = self.control_randomness(target_token_logits, seed)
-            target_token_logits, target_token_idxes = self.filtering(target_token_logits, seed)
+            target_token_logits, target_token_idxes = self.filtering(
+                target_token_logits, seed
+            )
             if len(target_token_idxes) != 0:
                 new_tokens = self.pick(
                     target_token_logits,

@@ -102,7 +102,9 @@ class LanguageModels:
     def pick(self, logits, idxes, target_word, n=1, include_punctuation=False):
         candidate_ids, candidate_probas = self.prob_multinomial(logits, n=n * 10)
         candidate_ids = [idxes[candidate_id] for candidate_id in candidate_ids]
-        results = self.get_candidiates(candidate_ids, candidate_probas, target_word, n, include_punctuation)
+        results = self.get_candidiates(
+            candidate_ids, candidate_probas, target_word, n, include_punctuation
+        )
 
         return results
 
@@ -117,7 +119,9 @@ class LanguageModels:
         num_sample = min(
             n, torch.nonzero(probas, as_tuple=False).size(0)
         )  # Number of potential candidate is small when top_k/ top_p are used.
-        filtered_top_n_ids = torch.multinomial(probas, num_samples=num_sample, replacement=False).tolist()
+        filtered_top_n_ids = torch.multinomial(
+            probas, num_samples=num_sample, replacement=False
+        ).tolist()
 
         if self.optimize["return_proba"]:
             top_n_probas = [probas[_id] for _id in filtered_top_n_ids]
@@ -145,10 +149,16 @@ class LanguageModels:
             candidate_word = self.id2token(candidate_id)
 
             # unable to predict word
-            if candidate_word in ["", self.UNKNOWN_TOKEN, self.SUBWORD_PREFIX] or "unused" in candidate_word:
+            if (
+                candidate_word in ["", self.UNKNOWN_TOKEN, self.SUBWORD_PREFIX]
+                or "unused" in candidate_word
+            ):
                 continue
             # predicted same word
-            if target_word is not None and candidate_word.lower() == target_word.lower():
+            if (
+                target_word is not None
+                and candidate_word.lower() == target_word.lower()
+            ):
                 continue
             # stop word
             if self.is_skip_candidate(candidate_word):

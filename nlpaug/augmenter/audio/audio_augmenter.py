@@ -58,7 +58,9 @@ class AudioAugmenter(Augmenter):
         return int(len(data) * (self.zone[1] - self.zone[0]) * self.coverage)
 
     def get_augment_range_by_coverage(self, data):
-        zone_start, zone_end = int(len(data) * self.zone[0]), int(len(data) * self.zone[1])
+        zone_start, zone_end = int(len(data) * self.zone[0]), int(
+            len(data) * self.zone[1]
+        )
         zone_size = zone_end - zone_start
 
         target_size = int(zone_size * self.coverage)
@@ -74,7 +76,9 @@ class AudioAugmenter(Augmenter):
         return start_pos, end_pos
 
     def get_augment_range_by_duration(self, data):
-        zone_start, zone_end = int(len(data) * self.zone[0]), int(len(data) * self.zone[1])
+        zone_start, zone_end = int(len(data) * self.zone[0]), int(
+            len(data) * self.zone[1]
+        )
         zone_size = zone_end - zone_start
 
         target_size = int(self.sampling_rate * self.duration)

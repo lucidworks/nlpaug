@@ -256,7 +256,9 @@ class RandomCharAug(CharAugmenter):
                 continue
 
             for char_i in aug_char_idxes:
-                swap_position = self._get_swap_position(char_i, len(chars) - 1, mode=self.swap_mode)
+                swap_position = self._get_swap_position(
+                    char_i, len(chars) - 1, mode=self.swap_mode
+                )
                 is_original_upper, is_swap_upper = (
                     chars[char_i].isupper(),
                     chars[swap_position].isupper(),
@@ -382,7 +384,9 @@ class RandomCharAug(CharAugmenter):
                 return pos + self.sample([-1, 1], 1)[0]
         elif mode == "middle":
             # Middle Random: https://arxiv.org/pdf/1711.02173.pdf
-            candidates = [_ for _ in range(token_length) if _ not in [0, pos, token_length]]
+            candidates = [
+                _ for _ in range(token_length) if _ not in [0, pos, token_length]
+            ]
             if len(candidates) == 0:
                 return pos
             return self.sample(candidates, 1)[0]

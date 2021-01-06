@@ -35,9 +35,13 @@ class Keyboard(Character):
 
     # TODO: Extending to 2 keyboard distance
     @classmethod
-    def get_model(cls, model_path, special_char=True, numeric=True, upper_case=True, lang="en"):
+    def get_model(
+        cls, model_path, special_char=True, numeric=True, upper_case=True, lang="en"
+    ):
         if not os.path.exists(model_path):
-            raise ValueError('The model_path does not exist. Please check "{}"'.format(model_path))
+            raise ValueError(
+                'The model_path does not exist. Please check "{}"'.format(model_path)
+            )
 
         with open(model_path, encoding="utf8") as f:
             mapping = json.load(f)

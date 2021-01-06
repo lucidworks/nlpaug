@@ -12,7 +12,9 @@ from nlpaug.util import Action
 class TestTfIdf(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        env_config_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", ".env"))
+        env_config_path = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "..", "..", "..", ".env")
+        )
         load_dotenv(env_config_path)
 
     def test_all(self):
@@ -38,7 +40,9 @@ class TestTfIdf(unittest.TestCase):
             token_pattern = re.compile(token_pattern)
             return token_pattern.findall(text)
 
-        train_data = sklearn.datasets.fetch_20newsgroups(subset="train", remove=("headers", "footers", "quotes"))
+        train_data = sklearn.datasets.fetch_20newsgroups(
+            subset="train", remove=("headers", "footers", "quotes")
+        )
         train_x = train_data.data
 
         train_x_tokens = [_tokenizer(x) for x in train_x]
@@ -62,7 +66,9 @@ class TestTfIdf(unittest.TestCase):
 
     def _empty_input_for_insert(self):
         texts = [" "]
-        aug = naw.TfIdfAug(model_path=os.environ.get("MODEL_DIR"), action=Action.SUBSTITUTE)
+        aug = naw.TfIdfAug(
+            model_path=os.environ.get("MODEL_DIR"), action=Action.SUBSTITUTE
+        )
 
         for text in texts:
             augmented_text = aug.augment(text)
@@ -77,7 +83,9 @@ class TestTfIdf(unittest.TestCase):
 
         augmenters = [
             naw.TfIdfAug(model_path=os.environ.get("MODEL_DIR"), action=Action.INSERT),
-            naw.TfIdfAug(model_path=os.environ.get("MODEL_DIR"), action=Action.SUBSTITUTE),
+            naw.TfIdfAug(
+                model_path=os.environ.get("MODEL_DIR"), action=Action.SUBSTITUTE
+            ),
         ]
 
         for aug in augmenters:
@@ -85,10 +93,14 @@ class TestTfIdf(unittest.TestCase):
                 self.assertLess(0, len(text))
                 augmented_text = aug.augment(text)
                 if aug.action == Action.INSERT:
-                    self.assertLess(len(text.split(" ")), len(augmented_text.split(" ")))
+                    self.assertLess(
+                        len(text.split(" ")), len(augmented_text.split(" "))
+                    )
                     self.assertNotEqual(text, augmented_text)
                 elif aug.action == Action.SUBSTITUTE:
-                    self.assertEqual(len(text.split(" ")), len(augmented_text.split(" ")))
+                    self.assertEqual(
+                        len(text.split(" ")), len(augmented_text.split(" "))
+                    )
 
                     if unknown_token == text:
                         self.assertEqual(text, augmented_text)
@@ -116,7 +128,9 @@ class TestTfIdf(unittest.TestCase):
     def _substitute(self):
         texts = ["The quick brown fox jumps over the lazy dog"]
 
-        aug = naw.TfIdfAug(model_path=os.environ.get("MODEL_DIR"), action=Action.SUBSTITUTE)
+        aug = naw.TfIdfAug(
+            model_path=os.environ.get("MODEL_DIR"), action=Action.SUBSTITUTE
+        )
 
         for text in texts:
             self.assertLess(0, len(text))
@@ -160,7 +174,9 @@ class TestTfIdf(unittest.TestCase):
     def _skip_punctuation(self):
         text = ". . . . ! ? # @"
 
-        aug = naw.TfIdfAug(model_path=os.environ.get("MODEL_DIR"), action=Action.SUBSTITUTE)
+        aug = naw.TfIdfAug(
+            model_path=os.environ.get("MODEL_DIR"), action=Action.SUBSTITUTE
+        )
 
         augmented_text = aug.augment(text)
         self.assertEqual(text, augmented_text)

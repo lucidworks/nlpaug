@@ -56,9 +56,13 @@ class NoiseAug(AudioAugmenter):
         start_pos, end_pos = self.get_augment_range_by_coverage(data)
         aug_segment_size = end_pos - start_pos
 
-        noise, color = self.model.get_noise_and_color(aug_segment_size, self.noises, self.color)
+        noise, color = self.model.get_noise_and_color(
+            aug_segment_size, self.noises, self.color
+        )
 
         if not self.stateless:
             self.start_pos, self.end_pos, self.aug_factor = start_pos, end_pos, color
 
-        return self.model.manipulate(data, start_pos=start_pos, end_pos=end_pos, noise=noise)
+        return self.model.manipulate(
+            data, start_pos=start_pos, end_pos=end_pos, noise=noise
+        )

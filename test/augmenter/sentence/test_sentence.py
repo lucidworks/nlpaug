@@ -9,7 +9,9 @@ from nlpaug.util import Action, Doc
 class TestSentence(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        env_config_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", ".env"))
+        env_config_path = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "..", "..", "..", ".env")
+        )
         load_dotenv(env_config_path)
 
         cls.model_paths = ["xlnet-base-cased", "gpt2", "distilgpt2"]

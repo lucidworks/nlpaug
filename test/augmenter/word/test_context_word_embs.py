@@ -9,7 +9,9 @@ import nlpaug.model.lang_models as nml
 class TestContextualWordEmbsAug(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        env_config_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", ".env"))
+        env_config_path = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "..", "..", "..", ".env")
+        )
         load_dotenv(env_config_path)
 
         cls.text = "The quick brown fox jumps over the lazy dog. "
@@ -43,7 +45,9 @@ class TestContextualWordEmbsAug(unittest.TestCase):
 
     def test_none_device(self):
         for model_path in self.model_paths:
-            aug = naw.ContextualWordEmbsAug(model_path=model_path, force_reload=True, device=None)
+            aug = naw.ContextualWordEmbsAug(
+                model_path=model_path, force_reload=True, device=None
+            )
             self.assertTrue(aug.device == "cpu")
 
     def test_reset_model(self):
@@ -92,7 +96,9 @@ class TestContextualWordEmbsAug(unittest.TestCase):
             # print('[{}]: {}'.format(input_param['lang'], augmented_text))
 
     def test_fast_tokenizer(self):
-        aug = naw.ContextualWordEmbsAug(model_path="blinoff/roberta-base-russian-v0", force_reload=True)
+        aug = naw.ContextualWordEmbsAug(
+            model_path="blinoff/roberta-base-russian-v0", force_reload=True
+        )
         aug.augment("Мозг — это машина  которая пытается снизить ошибку в прогнозе.")
         self.assertTrue(True)
 
@@ -105,7 +111,9 @@ class TestContextualWordEmbsAug(unittest.TestCase):
             insert_aug = naw.ContextualWordEmbsAug(
                 model_path=model_path, action="insert", force_reload=True, device=device
             )
-            substitute_aug = naw.ContextualWordEmbsAug(model_path=model_path, action="substitute")
+            substitute_aug = naw.ContextualWordEmbsAug(
+                model_path=model_path, action="substitute"
+            )
 
             for data in [self.text, self.texts]:
                 self.insert(insert_aug, data)

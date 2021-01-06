@@ -20,7 +20,11 @@ class Noise(Audio):
 
     def validate(self, color):
         if color not in self.COLOR_NOISES + ["random"]:
-            raise ValueError("Only support {} while `{}` is passed".format(self.COLOR_NOISES + ["random"], self.color))
+            raise ValueError(
+                "Only support {} while `{}` is passed".format(
+                    self.COLOR_NOISES + ["random"], self.color
+                )
+            )
 
     def get_noise_and_color(self, aug_segment_size, noises, color):
         if noises is None:

@@ -59,7 +59,9 @@ def init_context_word_embs_sentence_model(
             silence=True,
         )
     else:
-        raise ValueError("Model name value is unexpected. Only support XLNet and GPT2 model.")
+        raise ValueError(
+            "Model name value is unexpected. Only support XLNet and GPT2 model."
+        )
 
     CONTEXT_WORD_EMBS_SENTENCE_MODELS[model_name] = model
     return model
@@ -167,7 +169,9 @@ class ContextualWordEmbsForSentenceAug(SentenceAugmenter):
             if sum(early_stops) == len(all_data):
                 break
 
-            aug_input_poses = []  # store which input augmented. No augmentation if genrated a sentence
+            aug_input_poses = (
+                []
+            )  # store which input augmented. No augmentation if genrated a sentence
             texts = []
             for i, d in enumerate(all_data):
                 if early_stops[i] == 1:
@@ -177,7 +181,9 @@ class ContextualWordEmbsForSentenceAug(SentenceAugmenter):
                 augmented_text = augmented_texts[i]
                 external_memory = external_memories[i]
 
-                if external_memory is None:  # First step or does not enable optimization
+                if (
+                    external_memory is None
+                ):  # First step or does not enable optimization
                     text = d + augmented_text
                 else:
                     text = ""
@@ -188,7 +194,9 @@ class ContextualWordEmbsForSentenceAug(SentenceAugmenter):
 
                 texts.append(text)
 
-            outputs = self.model.predict(texts, n=1, external_memory=external_memory, include_punctuation=True)
+            outputs = self.model.predict(
+                texts, n=1, external_memory=external_memory, include_punctuation=True
+            )
 
             for i, output in enumerate(outputs):
                 aug_input_pos = aug_input_poses[i]
@@ -205,7 +213,9 @@ class ContextualWordEmbsForSentenceAug(SentenceAugmenter):
                     candidate = self.sample(output, 1)[0]
 
                 change_seq += 1
-                docs[aug_input_pos].add_token(aug_idx, token="", action=Action.INSERT, change_seq=0)
+                docs[aug_input_pos].add_token(
+                    aug_idx, token="", action=Action.INSERT, change_seq=0
+                )
                 docs[aug_input_pos].update_change_log(
                     aug_idx,
                     token=self.model.clean(candidate),
@@ -229,7 +239,8 @@ class ContextualWordEmbsForSentenceAug(SentenceAugmenter):
             results = [d + a for d, a in zip(all_data, augmented_texts)]
         elif self.model_type in ["xlnet"]:
             results = [
-                d + " " + self.model.tokenizer.convert_tokens_to_string(a) for d, a in zip(all_data, augmented_texts)
+                d + " " + self.model.tokenizer.convert_tokens_to_string(a)
+                for d, a in zip(all_data, augmented_texts)
             ]
 
         if isinstance(data, list):

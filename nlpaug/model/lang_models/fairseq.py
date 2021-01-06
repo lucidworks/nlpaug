@@ -28,7 +28,9 @@ class Fairseq(LanguageModels):
             import fairseq
             from fairseq.models.transformer import TransformerModel
         except ModuleNotFoundError:
-            raise ModuleNotFoundError("Missed fairseq library. Install fairseq by https://github.com/pytorch/fairseq")
+            raise ModuleNotFoundError(
+                "Missed fairseq library. Install fairseq by https://github.com/pytorch/fairseq"
+            )
 
         self.from_model_name = from_model_name
         self.from_model_checkpt = from_model_checkpt
@@ -62,9 +64,7 @@ class Fairseq(LanguageModels):
                     bpe=bpe_name,
                 )
             except TypeError:
-                err_msg = (
-                    "Cannot load model from local path. You may check the following parameters are correct or not."
-                )
+                err_msg = "Cannot load model from local path. You may check the following parameters are correct or not."
                 err_msg += " Model Directory: " + from_model_name
                 err_msg += ", Checkpoint File Name: " + from_model_checkpt
                 err_msg += ", Tokenizer Name: " + tokenzier_name
@@ -79,9 +79,7 @@ class Fairseq(LanguageModels):
                     bpe=bpe_name,
                 )
             except TypeError:
-                err_msg = (
-                    "Cannot load model from local path. You may check the following parameters are correct or not."
-                )
+                err_msg = "Cannot load model from local path. You may check the following parameters are correct or not."
                 err_msg += " Model Directory: " + to_model_name
                 err_msg += ", Checkpoint File Name: " + to_model_checkpt
                 err_msg += ", Tokenizer Name: " + tokenzier_name

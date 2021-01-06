@@ -28,7 +28,9 @@ class Bart(LanguageModels):
         try:
             from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
         except ModuleNotFoundError:
-            raise ModuleNotFoundError("Missed transformers library. Install transfomers by `pip install transformers`")
+            raise ModuleNotFoundError(
+                "Missed transformers library. Install transfomers by `pip install transformers`"
+            )
 
         self.model_path = model_path
         self.min_length = min_length
@@ -39,10 +41,16 @@ class Bart(LanguageModels):
         self.tokenizer = AutoTokenizer.from_pretrained(model_path)
         if silence:
             # Transformers thrown an warning regrading to weight initialization. It is expected
-            orig_log_level = logging.getLogger("transformers." + "modeling_utils").getEffectiveLevel()
-            logging.getLogger("transformers." + "modeling_utils").setLevel(logging.ERROR)
+            orig_log_level = logging.getLogger(
+                "transformers." + "modeling_utils"
+            ).getEffectiveLevel()
+            logging.getLogger("transformers." + "modeling_utils").setLevel(
+                logging.ERROR
+            )
             self.model = AutoModelForSeq2SeqLM.from_pretrained(model_path)
-            logging.getLogger("transformers." + "modeling_utils").setLevel(orig_log_level)
+            logging.getLogger("transformers." + "modeling_utils").setLevel(
+                orig_log_level
+            )
         else:
             self.model = AutoModelForSeq2SeqLM.from_pretrained(model_path)
 
@@ -56,7 +64,9 @@ class Bart(LanguageModels):
 
     def predict(self, texts, n=1):
         # Convert to feature
-        inputs = self.tokenizer(texts, padding="longest", return_tensors=self.return_tensor)
+        inputs = self.tokenizer(
+            texts, padding="longest", return_tensors=self.return_tensor
+        )
         token_inputs = inputs["input_ids"].to(self.device)
         mask_inputs = inputs["attention_mask"].to(self.device)
 
@@ -79,7 +89,9 @@ class Bart(LanguageModels):
             )
 
         for target_token_ids in outputs:
-            tokens = self.tokenizer.decode(target_token_ids, skip_special_tokens=self.skip_special_token)
+            tokens = self.tokenizer.decode(
+                target_token_ids, skip_special_tokens=self.skip_special_token
+            )
             # Return full sentence only.
             for i in range(len(tokens) - 1, -1, -1):
                 if tokens[i] in text_tokenizer.SENTENCE_SEPARATOR:
@@ -89,7 +101,11 @@ class Bart(LanguageModels):
         return results
 
     def get_min_length(self, min_length):
-        return int(min_length * self.min_length) if self.min_length < 1 else self.min_length
+        return (
+            int(min_length * self.min_length)
+            if self.min_length < 1
+            else self.min_length
+        )
 
     def get_max_length(self, max_length):
         if self.max_length < 1:

@@ -95,7 +95,9 @@ class KeyboardAug(CharAugmenter):
             lang_list = set(
                 map(
                     lambda file_name: file_name.replace(".json", ""),
-                    os.listdir(os.path.join(LibraryUtil.get_res_dir(), "char", "keyboard")),
+                    os.listdir(
+                        os.path.join(LibraryUtil.get_res_dir(), "char", "keyboard")
+                    ),
                 )
             )
             if lang not in lang_list:
@@ -103,7 +105,9 @@ class KeyboardAug(CharAugmenter):
                     "Only support en and th now. You may provide the keyboard mapping "
                     'such that we can support "{}"'.format(lang)
                 )
-            self.model_path = os.path.join(LibraryUtil.get_res_dir(), "char", "keyboard", lang + ".json")
+            self.model_path = os.path.join(
+                LibraryUtil.get_res_dir(), "char", "keyboard", lang + ".json"
+            )
         else:
             self.model_path = model_path
         self.model = self.get_model(

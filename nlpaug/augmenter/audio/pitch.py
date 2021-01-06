@@ -63,4 +63,6 @@ class PitchAug(AudioAugmenter):
                 pitch_level,
             )
 
-        return self.model.manipulate(data, start_pos, end_pos, pitch_level, self.sampling_rate)
+        return self.model.manipulate(
+            data, start_pos, end_pos, pitch_level, self.sampling_rate
+        )

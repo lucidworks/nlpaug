@@ -8,10 +8,14 @@ import nlpaug.augmenter.word as naw
 class TestSynonym(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        env_config_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", ".env"))
+        env_config_path = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "..", "..", "..", ".env")
+        )
         load_dotenv(env_config_path)
 
-        ppdb_model_file_path = os.path.join(os.environ.get("MODEL_DIR"), "word", "ppdb", "ppdb-2.0-s-all")
+        ppdb_model_file_path = os.path.join(
+            os.environ.get("MODEL_DIR"), "word", "ppdb", "ppdb-2.0-s-all"
+        )
 
         cls.augs = [
             naw.SynonymAug(aug_src="wordnet"),
@@ -141,7 +145,9 @@ class TestSynonym(unittest.TestCase):
             "cynophiles",
             "clebs",
         ]
-        model_path = os.path.join(os.environ.get("MODEL_DIR"), "word", "ppdb", "ppdb-1.0-s-lexical-french")
+        model_path = os.path.join(
+            os.environ.get("MODEL_DIR"), "word", "ppdb", "ppdb-1.0-s-lexical-french"
+        )
         aug = naw.SynonymAug(aug_src="ppdb", model_path=model_path)
         augmented_text = aug.augment(text)
         self.assertTrue(augmented_text in expected_texts)
@@ -163,6 +169,8 @@ class TestSynonym(unittest.TestCase):
         aug = naw.SynonymAug(aug_src="wordnet")
         self.assertNotEqual(text, aug.augment(text))
 
-        model_path = os.path.join(os.environ.get("MODEL_DIR"), "word", "ppdb", "ppdb-2.0-s-all")
+        model_path = os.path.join(
+            os.environ.get("MODEL_DIR"), "word", "ppdb", "ppdb-2.0-s-all"
+        )
         aug2 = naw.SynonymAug(aug_src="ppdb", model_path=model_path)
         self.assertNotEqual(text, aug2.augment(text))

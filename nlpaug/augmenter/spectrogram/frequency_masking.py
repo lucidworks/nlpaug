@@ -67,7 +67,9 @@ class FrequencyMaskingAug(SpectrogramAugmenter):
         if v < self.factor[1] and not self.silence:
             Logger.log().warning(
                 "Upper bound of factor is larger than {}.".format(v)
-                + " It should be smaller than number of frequency. Will use {} as upper bound".format(v)
+                + " It should be smaller than number of frequency. Will use {} as upper bound".format(
+                    v
+                )
             )
 
         upper_bound = self.factor[1] if v > self.factor[1] else v
@@ -85,4 +87,6 @@ class FrequencyMaskingAug(SpectrogramAugmenter):
                 time_end,
             )
 
-        return self.model.manipulate(data, f=f, f0=f0, time_start=time_start, time_end=time_end)
+        return self.model.manipulate(
+            data, f=f, f0=f0, time_start=time_start, time_end=time_end
+        )

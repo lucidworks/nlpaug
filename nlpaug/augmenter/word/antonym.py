@@ -121,9 +121,13 @@ class AntonymAug(WordAugmenter):
                 candidates.extend(self.model.predict(tokens[aug_idx][0]))
             else:
                 for word_pos in word_poses:
-                    candidates.extend(self.model.predict(tokens[aug_idx][0], pos=word_pos))
+                    candidates.extend(
+                        self.model.predict(tokens[aug_idx][0], pos=word_pos)
+                    )
 
-            candidates = [c for c in candidates if c.lower() != tokens[aug_idx][0].lower()]
+            candidates = [
+                c for c in candidates if c.lower() != tokens[aug_idx][0].lower()
+            ]
 
             if len(candidates) > 0:
                 candidate = self.sample(candidates, 1)[0]
@@ -144,7 +148,9 @@ class AntonymAug(WordAugmenter):
             candidates.extend(self.model.predict(tokens[token_idx][0]))
         else:
             for word_pos in word_poses:
-                candidates.extend(self.model.predict(tokens[token_idx][0], pos=word_pos))
+                candidates.extend(
+                    self.model.predict(tokens[token_idx][0], pos=word_pos)
+                )
 
         candidates = [c for c in candidates if c.lower() != original_token.lower()]
         return candidates
@@ -183,7 +189,9 @@ class AntonymAug(WordAugmenter):
                 substitute_token = self.align_capitalization(original_token, candidate)
 
                 if aug_idx == 0:
-                    substitute_token = self.align_capitalization(original_token, substitute_token)
+                    substitute_token = self.align_capitalization(
+                        original_token, substitute_token
+                    )
 
                 change_seq += 1
                 doc.add_change_log(

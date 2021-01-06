@@ -39,7 +39,11 @@ class WordAugmenter(Augmenter):
         self.tokenizer = tokenizer or Tokenizer.tokenizer
         self.reverse_tokenizer = reverse_tokenizer or Tokenizer.reverse_tokenizer
         self.stopwords = stopwords
-        self.stopwords_regex = re.compile(stopwords_regex) if stopwords_regex is not None else stopwords_regex
+        self.stopwords_regex = (
+            re.compile(stopwords_regex)
+            if stopwords_regex is not None
+            else stopwords_regex
+        )
 
     @classmethod
     def clean(cls, data):
@@ -88,7 +92,10 @@ class WordAugmenter(Augmenter):
         return False
 
     def align_capitalization(self, src_token, dest_token):
-        if self.get_word_case(src_token) == "capitalize" and self.get_word_case(dest_token) == "lower":
+        if (
+            self.get_word_case(src_token) == "capitalize"
+            and self.get_word_case(dest_token) == "lower"
+        ):
             return dest_token.capitalize()
         return dest_token
 

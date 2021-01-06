@@ -6,7 +6,9 @@ class ExceptionInfo:
         self.msg = msg
 
     def output(self):
-        msg = "[{}] Name:{}, Code:{}, Message:{}".format(self.exp_type, self.name, self.code, self.msg)
+        msg = "[{}] Name:{}, Code:{}, Message:{}".format(
+            self.exp_type, self.name, self.code, self.msg
+        )
         print(msg)
 
 

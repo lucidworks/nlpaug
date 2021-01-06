@@ -9,7 +9,9 @@ from nlpaug.util import Action, Doc
 class TestWord(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        env_config_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", ".env"))
+        env_config_path = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "..", "..", "..", ".env")
+        )
         load_dotenv(env_config_path)
 
         cls.word2vec_model_path = os.path.join(
@@ -18,10 +20,14 @@ class TestWord(unittest.TestCase):
             "word_embs",
             "GoogleNews-vectors-negative300.bin",
         )
-        cls.word2vec_model = naw.WordEmbsAug(model_type="word2vec", model_path=cls.word2vec_model_path)
+        cls.word2vec_model = naw.WordEmbsAug(
+            model_type="word2vec", model_path=cls.word2vec_model_path
+        )
         cls.context_word_embs_model = naw.ContextualWordEmbsAug()
 
-        cls.tfidf_model_path = os.path.join(os.environ.get("MODEL_DIR"), "word", "tfidf")
+        cls.tfidf_model_path = os.path.join(
+            os.environ.get("MODEL_DIR"), "word", "tfidf"
+        )
 
         cls._train_tfidf(cls)
 
@@ -40,7 +46,9 @@ class TestWord(unittest.TestCase):
             return token_pattern.findall(text)
 
         # Load sample data
-        train_data = sklearn.datasets.fetch_20newsgroups(subset="train", remove=("headers", "footers", "quotes"))
+        train_data = sklearn.datasets.fetch_20newsgroups(
+            subset="train", remove=("headers", "footers", "quotes")
+        )
         train_x = train_data.data
 
         # Tokenize input
@@ -200,7 +208,9 @@ class TestWord(unittest.TestCase):
         augs = [
             naw.RandomWordAug(),
             naw.WordEmbsAug(model_type="word2vec", model_path=self.word2vec_model_path),
-            naw.ContextualWordEmbsAug(model_path="xlnet-base-cased", action="substitute", device="cpu"),
+            naw.ContextualWordEmbsAug(
+                model_path="xlnet-base-cased", action="substitute", device="cpu"
+            ),
         ]
 
         for num_thread in [1, 3]:
@@ -230,13 +240,17 @@ class TestWord(unittest.TestCase):
             for i in range(10):
                 augmented_text = aug.augment(text)
                 self.assertTrue(
-                    "quick" not in augmented_text or "over" not in augmented_text or "lazy" not in augmented_text
+                    "quick" not in augmented_text
+                    or "over" not in augmented_text
+                    or "lazy" not in augmented_text
                 )
 
     # https://github.com/makcedward/nlpaug/issues/81
     def test_stopwords_regex(self):
         text = "The quick brown fox jumps over the lazy dog."
-        stopwords_regex = "( [a-zA-Z]{1}ox | [a-z]{1}og|(brown)|[a-zA-z]{1}he)|[a-z]{2}mps "
+        stopwords_regex = (
+            "( [a-zA-Z]{1}ox | [a-z]{1}og|(brown)|[a-zA-z]{1}he)|[a-z]{2}mps "
+        )
 
         augs = [
             naw.RandomWordAug(action="delete", stopwords_regex=stopwords_regex),
@@ -252,7 +266,9 @@ class TestWord(unittest.TestCase):
             for i in range(10):
                 augmented_text = aug.augment(text)
                 self.assertTrue(
-                    "quick" not in augmented_text or "over" not in augmented_text or "lazy" not in augmented_text
+                    "quick" not in augmented_text
+                    or "over" not in augmented_text
+                    or "lazy" not in augmented_text
                 )
 
     # https://github.com/makcedward/nlpaug/issues/82
@@ -285,7 +301,10 @@ class TestWord(unittest.TestCase):
         expected = False
         for i in range(10):
             augmented_text = aug.augment("Good")
-            if "good" in augmented_text and aug.get_word_case(augmented_text.split(" ")[0]) == "capitalize":
+            if (
+                "good" in augmented_text
+                and aug.get_word_case(augmented_text.split(" ")[0]) == "capitalize"
+            ):
                 expected = True
                 break
         self.assertTrue(expected)
