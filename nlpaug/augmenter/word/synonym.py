@@ -93,7 +93,14 @@ class SynonymAug(WordAugmenter):
         self.aug_src = aug_src
         self.model_path = model_path
         self.lang = lang
-        self.model = self.get_model(aug_src, lang, model_path, force_reload)
+        self.force_reload = force_reload
+
+        # Need to make model global to have it play nice with multiprocessing
+        # Because pickle is unable to pickle wordnet
+        global model
+        model = self.get_model(
+            self.aug_src, self.lang, self.model_path, self.force_reload
+        )
 
     def skip_aug(self, token_idxes: List[int], tokens: List[str]):
         results = []
@@ -112,7 +119,7 @@ class SynonymAug(WordAugmenter):
 
                 have_candidate = False
                 for word_pos in word_poses:
-                    if len(self.model.predict(tokens[token_idx][0], pos=word_pos)) > 0:
+                    if len(model.predict(tokens[token_idx][0], pos=word_pos)) > 0:
                         have_candidate = True
                         break
 
@@ -151,7 +158,7 @@ class SynonymAug(WordAugmenter):
 
         original_tokens = doc.get_original_tokens()
 
-        pos = self.model.pos_tag(original_tokens)
+        pos = model.pos_tag(original_tokens)
 
         aug_idxes = self._get_aug_idxes(pos)
         if aug_idxes is None or len(aug_idxes) == 0:
@@ -166,10 +173,10 @@ class SynonymAug(WordAugmenter):
             candidates = []
             if word_poses is None or len(word_poses) == 0:
                 # Use every possible words as the mapping does not defined correctly
-                candidates.extend(self.model.predict(pos[aug_idx][0]))
+                candidates.extend(model.predict(pos[aug_idx][0]))
             else:
                 for word_pos in word_poses:
-                    candidates.extend(self.model.predict(pos[aug_idx][0], pos=word_pos))
+                    candidates.extend(model.predict(pos[aug_idx][0], pos=word_pos))
 
             candidates = [c for c in candidates if c.lower() != original_token.lower()]
 
