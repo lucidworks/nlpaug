@@ -152,7 +152,9 @@ class SynonymAug(WordAugmenter):
         return aug_idexes
 
     def substitute_wordnet(self, data):
-        model = self.get_model(self.aug_src, self.lang, self.model_path, self.force_reload)
+        model = self.get_model(
+            self.aug_src, self.lang, self.model_path, self.force_reload
+        )
 
         if not data or not data.strip():
             return data
@@ -182,7 +184,9 @@ class SynonymAug(WordAugmenter):
                 for word_pos in word_poses:
                     candidates.extend(model.predict(pos[aug_idx][0], pos=word_pos))
 
-            doc, change_seq = self.populate_candidates(candidates, original_token, aug_idx, change_seq, doc)
+            doc, change_seq = self.populate_candidates(
+                candidates, original_token, aug_idx, change_seq, doc
+            )
 
         return self.return_doc(doc)
 
@@ -246,7 +250,9 @@ class SynonymAug(WordAugmenter):
                 for word_pos in word_poses:
                     candidates.extend(self.model.predict(pos[aug_idx][0], pos=word_pos))
 
-            doc, change_seq = self.populate_candidates(candidates, original_token, aug_idx, change_seq, doc)
+            doc, change_seq = self.populate_candidates(
+                candidates, original_token, aug_idx, change_seq, doc
+            )
 
         return self.return_doc(doc)
 
