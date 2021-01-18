@@ -93,7 +93,16 @@ class SynonymAug(WordAugmenter):
         self.aug_src = aug_src
         self.model_path = model_path
         self.lang = lang
-        self.model = self.get_model(aug_src, lang, model_path, force_reload)
+        self.force_reload = force_reload
+
+        # Need to separate model loading to have it play nice with multiprocessing
+        # Because pickle is unable to pickle wordnet
+        if self.aug_src == "ppdb":
+            self.model = self.get_model(
+                self.aug_src, self.lang, self.model_path, self.force_reload
+            )
+        else:
+            self.model = None
 
     def skip_aug(self, token_idxes: List[int], tokens: List[str]):
         results = []
@@ -142,7 +151,77 @@ class SynonymAug(WordAugmenter):
         aug_idexes = self.sample(word_idxes, aug_cnt)
         return aug_idexes
 
-    def substitute(self, data):
+    def substitute_wordnet(self, data):
+        model = self.get_model(
+            self.aug_src, self.lang, self.model_path, self.force_reload
+        )
+
+        if not data or not data.strip():
+            return data
+
+        change_seq = 0
+        doc = Doc(data, self.tokenizer(data))
+
+        original_tokens = doc.get_original_tokens()
+
+        pos = model.pos_tag(original_tokens)
+
+        aug_idxes = self._get_aug_idxes(pos)
+        if aug_idxes is None or len(aug_idxes) == 0:
+            if self.include_detail:
+                return data, []
+            return data
+
+        for aug_idx in aug_idxes:
+            original_token = original_tokens[aug_idx]
+
+            word_poses = PartOfSpeech.constituent2pos(pos[aug_idx][1])
+            candidates = []
+            if word_poses is None or len(word_poses) == 0:
+                # Use every possible words as the mapping does not defined correctly
+                candidates.extend(model.predict(pos[aug_idx][0]))
+            else:
+                for word_pos in word_poses:
+                    candidates.extend(model.predict(pos[aug_idx][0], pos=word_pos))
+
+            doc, change_seq = self.populate_candidates(
+                candidates, original_token, aug_idx, change_seq, doc
+            )
+
+        return self.return_doc(doc)
+
+    def populate_candidates(self, candidates, original_token, aug_idx, change_seq, doc):
+        candidates = [c for c in candidates if c.lower() != original_token.lower()]
+
+        if len(candidates) > 0:
+            candidate = self.sample(candidates, 1)[0]
+            candidate = candidate.replace("_", " ").replace("-", " ").lower()
+            substitute_token = self.align_capitalization(original_token, candidate)
+
+            if aug_idx == 0:
+                substitute_token = self.align_capitalization(
+                    original_token, substitute_token
+                )
+
+            change_seq += 1
+            doc.add_change_log(
+                aug_idx,
+                new_token=substitute_token,
+                action=Action.SUBSTITUTE,
+                change_seq=self.parent_change_seq + change_seq,
+            )
+        return doc, change_seq
+
+    def return_doc(self, doc):
+        if self.include_detail:
+            return (
+                self.reverse_tokenizer(doc.get_augmented_tokens()),
+                doc.get_change_logs(),
+            )
+        else:
+            return self.reverse_tokenizer(doc.get_augmented_tokens())
+
+    def substitute_ppdb(self, data):
         if not data or not data.strip():
             return data
 
@@ -171,33 +250,17 @@ class SynonymAug(WordAugmenter):
                 for word_pos in word_poses:
                     candidates.extend(self.model.predict(pos[aug_idx][0], pos=word_pos))
 
-            candidates = [c for c in candidates if c.lower() != original_token.lower()]
-
-            if len(candidates) > 0:
-                candidate = self.sample(candidates, 1)[0]
-                candidate = candidate.replace("_", " ").replace("-", " ").lower()
-                substitute_token = self.align_capitalization(original_token, candidate)
-
-                if aug_idx == 0:
-                    substitute_token = self.align_capitalization(
-                        original_token, substitute_token
-                    )
-
-                change_seq += 1
-                doc.add_change_log(
-                    aug_idx,
-                    new_token=substitute_token,
-                    action=Action.SUBSTITUTE,
-                    change_seq=self.parent_change_seq + change_seq,
-                )
-
-        if self.include_detail:
-            return (
-                self.reverse_tokenizer(doc.get_augmented_tokens()),
-                doc.get_change_logs(),
+            doc, change_seq = self.populate_candidates(
+                candidates, original_token, aug_idx, change_seq, doc
             )
+
+        return self.return_doc(doc)
+
+    def substitute(self, data):
+        if self.aug_src == "wordnet":
+            return self.substitute_wordnet(data)
         else:
-            return self.reverse_tokenizer(doc.get_augmented_tokens())
+            return self.substitute_ppdb(data)
 
     @classmethod
     def get_model(cls, aug_src, lang, dict_path, force_reload):
